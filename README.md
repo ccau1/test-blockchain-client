@@ -40,6 +40,7 @@ gomon .
   - use parameter store and secret manager to store env variables that can be populated during deployment phase. This way, variables are stored securely and instances will have the latest variables on service start.
   - move terraform to its own repo so it separates DevOps from developers
 - manually set secrets into secrets manager and read secrets into env on deploy
+- instead of retrieving IAM user's access key to set in github, can change to using OIDC
 
 ## TODO
 
