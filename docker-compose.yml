@@ -1,0 +1,15 @@
+version: "3.9" # optional since v1.27.0
+services:
+  api:
+    container_name: test-blockchain-api
+    build:
+      context: .
+      target: dev
+    command: air
+    volumes:
+      - .:/app
+    ports: 
+      - "${PORT}:${PORT}"
+    environment:
+      - PORT=${PORT}
+      - HOST=${HOST}
