@@ -127,7 +127,7 @@ resource "aws_ecs_task_definition" "bc_client_api" {
   container_definitions = <<DEFINITION
     [
       {
-        "image": "029319782524.dkr.ecr.ap-southeast-1.amazonaws.com/bc-client-api:latest",
+        "image": "${aws_iam_user.deploy.id}.dkr.ecr.${var.region}.amazonaws.com/${var.env}-bc-client-api:latest",
         "cpu": ${var.launch_type.cpu},
         "memory": ${var.launch_type.memory},
         "name": "${var.env}-bc-client-api",
@@ -142,7 +142,7 @@ resource "aws_ecs_task_definition" "bc_client_api" {
           "logDriver": "awslogs",
           "options": {
             "awslogs-group": "${var.env}-bc-client-api-container",
-            "awslogs-region": "ap-southeast-1",
+            "awslogs-region": "${var.region}",
             "awslogs-create-group": "true",
             "awslogs-stream-prefix": "${var.env}-bc-client-api"
           }

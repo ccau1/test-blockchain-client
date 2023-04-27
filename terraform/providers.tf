@@ -9,7 +9,7 @@ terraform {
 
 # Configure the AWS Provider
 provider "aws" {
-  region                   = "ap-southeast-1"
+  region                   = var.region
   shared_config_files      = ["~/.aws/config"]
   shared_credentials_files = ["~/.aws/credentials"]
   profile                  = "blockchain-client-terraform"
