@@ -31,6 +31,7 @@ on:
     branches: [ "main" ]
 
 env:
+  ENVIRONMENT: dev
   AWS_REGION: ap-southeast-1                    # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: dev-bc-client-api             # set this to your Amazon ECR repository name
   ECS_SERVICE: dev-bc-client-api-service        # set this to your Amazon ECS service name
@@ -48,20 +49,11 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment: production
+    environment: ${{ env.ENVIRONMENT }}
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-
-    - name: Test secret aws access key
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        echo ${#AWS_ACCESS_KEY_ID}
-        echo ${#AWS_SECRET_ACCESS_KEY}
-
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
