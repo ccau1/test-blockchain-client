@@ -29,6 +29,7 @@ resource "aws_iam_policy" "deploy_policy" {
         "iam:PassRole",
         "ecs:DescribeServices",
         "ecs:RegisterTaskDefinition",
+        "ecs:DescribeTaskDefinition",
         "ecs:UpdateService",
         "ecr:GetAuthorizationToken",
         "ecr:BatchGetImage",
