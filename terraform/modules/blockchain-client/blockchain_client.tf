@@ -1,6 +1,19 @@
 
 # // BACKEND 
 
+resource "aws_cloudwatch_log_group" "log" {
+  name = "/${aws_ecs_cluster.main.name}/${var.env}-bc-client-api"
+  retention_in_days = 14
+
+  depends_on = [
+    aws_ecs_cluster.main
+  ]
+
+  tags = {
+    Name = "${var.env}-bc-client-api-log-group"
+  }
+}
+
 resource "aws_ecr_repository" "bc_client_api" {
   name                 = "${var.env}-bc-client-api"
   image_tag_mutability = "MUTABLE"
@@ -141,7 +154,7 @@ resource "aws_ecs_task_definition" "bc_client_api" {
         "logConfiguration": {
           "logDriver": "awslogs",
           "options": {
-            "awslogs-group": "${var.env}-bc-client-api-container",
+            "awslogs-group": "${aws_cloudwatch_log_group.log.name}",
             "awslogs-region": "${var.region}",
             "awslogs-create-group": "true",
             "awslogs-stream-prefix": "${var.env}-bc-client-api"

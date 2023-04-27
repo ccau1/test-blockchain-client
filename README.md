@@ -34,7 +34,9 @@ gomon .
 ## Production Ready Requirement
 
 - add unit tests
-- setup github actions to run jobs test and promote to staging (in this scenario there's dev and staging)
+- github actions:
+  - run test (`go test ./...`) and promote to staging (in this scenario there's dev and staging)
+  - cache installed steps
 - terraform:
   - change all prefix "dev-" to "prod-". The purpose for the prefix is to have the option to run env (ie. dev, test, staging) on the same account.
   - use parameter store and secret manager to store env variables that can be populated during deployment phase. This way, variables are stored securely and instances will have the latest variables on service start.
@@ -45,10 +47,17 @@ gomon .
 ## TODO
 
 [x] throw error responses for requests
+
 [x] use validator
+
 [ ] test cases
-[ ] set terraform for deployment to ecs fargate, write HCL
-[ ] set terraform for different env
+
+[x] set terraform for deployment to ecs fargate, write HCL
+
+[x] set terraform for different env
+
 [ ] handle rpc endpoints based on endpoints returned errors
+
 [ ] handle rpc endpoints based on speed
+
 [ ] add a proxy (separate service for each provider, single entry point for wallet side to communicate with)
