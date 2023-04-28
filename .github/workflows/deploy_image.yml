@@ -8,14 +8,13 @@ on:
         type: string
       needs:
         required: true
-        type: string array
+        type: string
       environment:
         required: true
         type: string
       ENV:
         required: false
         type: string
-    secrets:
 
 jobs:
   deploy_image:
