@@ -83,18 +83,14 @@ jobs:
           name: myimage
           path: /tmp/myimage.tar
   deploy_to_dev:
-    name: Deploy to Development
-    runs-on: ubuntu-latest
-    needs: [build]
-    environment: dev
-    env:
-      ENV: dev
     uses: ./.github/workflows/deploy_image.yml
+    with:
+      name: Deploy to Development
+      needs: build
+      environment: dev
   deploy_to_staging:
-    name: Promote to Staging
-    runs-on: ubuntu-latest
-    needs: [build]
-    environment: staging
-    env:
-      ENV: staging
     uses: ./.github/workflows/deploy_image.yml
+    with:
+      name: Promote to Staging
+      needs: build
+      environment: staging
