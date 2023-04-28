@@ -85,14 +85,22 @@ jobs:
   deploy_to_dev:
     name: Deploy to Development
     needs: build
-    environment: dev
     uses: ./.github/workflows/deploy_image.yml
     with:
       ENV: dev
+      environment: dev
+      AWS_REGION: ${{ env.AWS_REGION }}
+      CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
+      ECS_SERVICE: ${{ env.ECS_SERVICE }}
+      ECS_CLUSTER: ${{ env.ECS_CLUSTER }}
   deploy_to_staging:
     name: Promote to Staging
     needs: build
-    environment: staging
     uses: ./.github/workflows/deploy_image.yml
     with:
       ENV: staging
+      environment: staging
+      AWS_REGION: ${{ env.AWS_REGION }}
+      CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
+      ECS_SERVICE: ${{ env.ECS_SERVICE }}
+      ECS_CLUSTER: ${{ env.ECS_CLUSTER }}

@@ -3,13 +3,30 @@ name: Deploy Image
 on:
   workflow_call:
     inputs:
+      environment:
+        required: true
+        type: string
       ENV:
         required: true
         type: string
+      AWS_REGION:
+        required: true
+        type: string
+      CONTAINER_NAME:
+        required: true
+        type: string
+      ECS_SERVICE:
+        required: true
+        type: string
+      ECS_CLUSTER:
+        required: true
+        type: string
+
 
 jobs:
   deploy_image:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     env:
       ENV: ${{ inputs.ENV }}
     steps:
@@ -21,7 +38,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ inputs.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -46,24 +63,24 @@ jobs:
           # be deployed to ECS.
           docker load --input /tmp/myimage.tar
           docker image ls -a
-          docker tag myimage:latest $ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker tag myimage:latest $ECR_REGISTRY/${{ inputs.ENV }}-$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/${{ inputs.ENV }}-$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/${{ inputs.ENV }}-$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       - name: Download task definition
         run: |
-          aws ecs describe-task-definition --task-definition ${{ env.ENV }}-bc-client-api --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --task-definition ${{ inputs.ENV }}-bc-client-api --query taskDefinition > task-definition.json
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: ${{ env.ENV }}-${{ env.CONTAINER_NAME }}
+          container-name: ${{ inputs.ENV }}-${{ inputs.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ENV }}-${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ENV }}-${{ env.ECS_CLUSTER }}
+          service: ${{ inputs.ENV }}-${{ inputs.ECS_SERVICE }}
+          cluster: ${{ inputs.ENV }}-${{ inputs.ECS_CLUSTER }}
           wait-for-service-stability: true
