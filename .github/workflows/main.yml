@@ -86,11 +86,9 @@ jobs:
     uses: ./.github/workflows/deploy_image.yml
     with:
       name: Deploy to Development
-      needs: build
       environment: dev
   deploy_to_staging:
     uses: ./.github/workflows/deploy_image.yml
     with:
       name: Promote to Staging
-      needs: build
       environment: staging
