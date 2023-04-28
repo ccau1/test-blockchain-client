@@ -83,11 +83,13 @@ jobs:
           name: myimage
           path: /tmp/myimage.tar
   deploy_to_dev:
+    needs: build
     uses: ./.github/workflows/deploy_image.yml
     with:
       name: Deploy to Development
       environment: dev
   deploy_to_staging:
+    needs: build
     uses: ./.github/workflows/deploy_image.yml
     with:
       name: Promote to Staging
