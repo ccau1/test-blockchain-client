@@ -88,120 +88,12 @@ jobs:
     needs: [build]
     environment: dev
     env:
-      ENV: staging
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: myimage
-          path: /tmp
-
-      - name: Load image
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          docker load --input /tmp/myimage.tar
-          docker tag myimage:latest $ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-      - name: Download task definition
-        run: |
-          aws ecs describe-task-definition --task-definition ${{ env.ENV }}-bc-client-api --query taskDefinition > task-definition.json
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: ${{ env.ENV }}-${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
-
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ENV }}-${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ENV }}-${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+      ENV: dev
+    uses: ./.github/workflows/deploy_image.yml
   deploy_to_staging:
     name: Promote to Staging
-    runs-on: ubuntu-latest
     needs: [build]
     environment: staging
     env:
       ENV: staging
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-        
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: myimage
-          path: /tmp
-
-      - name: Load image
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          docker load --input /tmp/myimage.tar
-          docker image ls -a
-          docker tag myimage:latest $ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-      - name: Download task definition
-        run: |
-          aws ecs describe-task-definition --task-definition ${{ env.ENV }}-bc-client-api --query taskDefinition > task-definition.json
-      - name: Fill in the new image ID in the Amazon ECS task definition
-        id: task-def
-        uses: aws-actions/amazon-ecs-render-task-definition@v1
-        with:
-          task-definition: task-definition.json
-          container-name: ${{ env.ENV }}-${{ env.CONTAINER_NAME }}
-          image: ${{ steps.build-image.outputs.image }}
-
-      - name: Deploy Amazon ECS task definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ENV }}-${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ENV }}-${{ env.ECS_CLUSTER }}
-          wait-for-service-stability: true
+    uses: ./.github/workflows/deploy_image.yml

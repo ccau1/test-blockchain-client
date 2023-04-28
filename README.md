@@ -37,6 +37,7 @@ gomon .
 - github actions:
   - run test (`go test ./...`) and promote to staging (in this scenario there's dev and staging)
   - cache installed steps
+  - add sonarcloud for extra layer to code checking
 - terraform:
   - change all prefix "dev-" to "prod-". The purpose for the prefix is to have the option to run env (ie. dev, test, staging) on the same account.
   - use parameter store and secret manager to store env variables that can be populated during deployment phase. This way, variables are stored securely and instances will have the latest variables on service start.
