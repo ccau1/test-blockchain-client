@@ -122,7 +122,7 @@ jobs:
           # push it to ECR so that it can
           # be deployed to ECS.
           docker load --input /tmp/myimage.tar
-          docker image ls -a
+          docker tag myimage:latest $ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG
           docker push $ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/${{env.ENV}}-$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
       - name: Download task definition
