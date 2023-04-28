@@ -25,6 +25,7 @@ on:
 
 jobs:
   deploy_image:
+    name: Deploy Image
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     env:

@@ -98,6 +98,9 @@ jobs:
       CONTAINER_NAME: ${{ needs.build.outputs.CONTAINER_NAME }}
       ECS_SERVICE: ${{ needs.build.outputs.ECS_SERVICE }}
       ECS_CLUSTER: ${{ needs.build.outputs.ECS_CLUSTER }}
+    secrets:
+      AWS_ACCESS_KEY_ID: secrets.AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: secrets.AWS_SECRET_ACCESS_KEY
   deploy_to_staging:
     name: Promote to Staging
     needs: build
@@ -109,3 +112,6 @@ jobs:
       CONTAINER_NAME: ${{ needs.build.outputs.CONTAINER_NAME }}
       ECS_SERVICE: ${{ needs.build.outputs.ECS_SERVICE }}
       ECS_CLUSTER: ${{ needs.build.outputs.ECS_CLUSTER }}
+    secrets:
+      AWS_ACCESS_KEY_ID: secrets.AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: secrets.AWS_SECRET_ACCESS_KEY
