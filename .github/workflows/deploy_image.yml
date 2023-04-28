@@ -20,7 +20,7 @@ jobs:
   deploy_image:
     name: ${{ inputs.name }}
     runs-on: ubuntu-latest
-    needs: ${{ fromJson(needs.setup.outputs.needs) }}
+    needs: ${{ fromJson(inputs.needs) }}
     environment: ${{ inputs.environment }}
     env:
       ENV: ${{ inputs.ENV || inputs.environment }}
