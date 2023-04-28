@@ -47,12 +47,25 @@ resource "aws_ecr_lifecycle_policy" "bc_client_api" {
 EOF
 }
 
+resource "random_string" "target_group" {
+  length = 4
+  special = false
+}
+
 resource "aws_lb_target_group" "bc_client_api" {
-  name        = "${var.env}-bc-client-api-tg"
+  name        = "${var.env}-bc-client-api-tg-${random_string.target_group.result}"
   port        = var.launch_type.container_port
   protocol    = "HTTP"
   vpc_id      = aws_vpc.default.id
   target_type = "ip"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = {
+    "Name" = "${var.env}-bc-client-api-tg"
+  }
 }
 
 resource "aws_security_group" "bc_client_api_task" {
@@ -61,7 +74,7 @@ resource "aws_security_group" "bc_client_api_task" {
 
   ingress {
     protocol        = "tcp"
-    from_port       = 80
+    from_port       = var.launch_type.container_port
     to_port         = var.launch_type.container_port
     security_groups = [aws_security_group.lb.id]
   }
