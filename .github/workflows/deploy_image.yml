@@ -3,23 +3,15 @@ name: Deploy Image
 on:
   workflow_call:
     inputs:
-      name:
-        required: true
-        type: string
-      environment:
-        required: true
-        type: string
       ENV:
-        required: false
+        required: true
         type: string
 
 jobs:
   deploy_image:
-    name: ${{ inputs.name }}
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
     env:
-      ENV: ${{ inputs.ENV || inputs.environment }}
+      ENV: ${{ inputs.ENV }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
