@@ -68,6 +68,7 @@ jobs:
       CONTAINER_NAME: ${{ env.CONTAINER_NAME }}
       ECS_SERVICE: ${{ env.ECS_SERVICE }}
       ECS_CLUSTER: ${{ env.ECS_CLUSTER }}
+      ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -89,7 +90,7 @@ jobs:
           path: /tmp/myimage.tar
   deploy_to_dev:
     name: Development
-    needs: build
+    needs: [build]
     uses: ./.github/workflows/deploy_image.yml
     with:
       ENV: dev
@@ -98,12 +99,13 @@ jobs:
       CONTAINER_NAME: ${{ needs.build.outputs.CONTAINER_NAME }}
       ECS_SERVICE: ${{ needs.build.outputs.ECS_SERVICE }}
       ECS_CLUSTER: ${{ needs.build.outputs.ECS_CLUSTER }}
+      ECR_REPOSITORY: ${{ needs.build.outputs.ECR_REPOSITORY }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   deploy_to_staging:
     name: Staging
-    needs: build
+    needs: [build]
     uses: ./.github/workflows/deploy_image.yml
     with:
       ENV: staging
@@ -112,6 +114,7 @@ jobs:
       CONTAINER_NAME: ${{ needs.build.outputs.CONTAINER_NAME }}
       ECS_SERVICE: ${{ needs.build.outputs.ECS_SERVICE }}
       ECS_CLUSTER: ${{ needs.build.outputs.ECS_CLUSTER }}
+      ECR_REPOSITORY: ${{ needs.build.outputs.ECR_REPOSITORY }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

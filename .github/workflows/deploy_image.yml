@@ -21,6 +21,9 @@ on:
       ECS_CLUSTER:
         required: true
         type: string
+      ECR_REPOSITORY:
+        required: true
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -70,9 +73,9 @@ jobs:
           # be deployed to ECS.
           docker load --input /tmp/myimage.tar
           docker image ls -a
-          docker tag myimage:latest $ECR_REGISTRY/${{ inputs.ENV }}-$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $ECR_REGISTRY/${{ inputs.ENV }}-$ECR_REPOSITORY:$IMAGE_TAG
-          echo "image=$ECR_REGISTRY/${{ inputs.ENV }}-$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+          docker tag myimage:latest $ECR_REGISTRY/${{ inputs.ENV }}-${{ inputs.ECR_REPOSITORY }}:$IMAGE_TAG
+          docker push $ECR_REGISTRY/${{ inputs.ENV }}-${{ inputs.ECR_REPOSITORY }}:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/${{ inputs.ENV }}-${{ inputs.ECR_REPOSITORY }}:$IMAGE_TAG" >> $GITHUB_OUTPUT
       - name: Download task definition
         run: |
           aws ecs describe-task-definition --task-definition ${{ inputs.ENV }}-bc-client-api --query taskDefinition > task-definition.json
