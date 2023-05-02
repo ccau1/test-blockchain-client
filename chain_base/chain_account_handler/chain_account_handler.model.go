@@ -6,21 +6,22 @@ import (
 )
 
 type ChainAccount = chain_account.ChainAccount
+type IChainAccountsStrategy = ChainAccountsStrategyTypes.IChainAccountsStrategy
 
-type DefaultChainAccountsStrategy = ChainAccountsStrategyTypes.StrategyLoop
+type DEFAULT_CHAIN_ACCOUNTS_STRATEGY = ChainAccountsStrategyTypes.StrategyLoop
 
 
 type ChainAccountsHandler struct {
 	loaded bool
 	chainList *[]ChainAccount
-	chainAccountsStrategy *ChainAccountsStrategyTypes.IChainAccountsStrategy
+	chainAccountsStrategy *IChainAccountsStrategy
 
-	UseStrategy ChainAccountsStrategyTypes.IChainAccountsStrategy
+	UseStrategy IChainAccountsStrategy
 }
 
 func (x *ChainAccountsHandler) Load() (*ChainAccountsHandler) {
 	if (x.UseStrategy == nil) {
-		x.UseStrategy = &DefaultChainAccountsStrategy{}
+		x.UseStrategy = &DEFAULT_CHAIN_ACCOUNTS_STRATEGY{}
 	}
 	// load chain account list into handler
 	x.LoadChainAccountList()

@@ -13,7 +13,12 @@ import (
 type ChainAccountsHandler = chain_account_handler.ChainAccountsHandler
 
 var chainAccountsHandler *ChainAccountsHandler = &ChainAccountsHandler{
-	UseStrategy: &ChainAccountsStrategyTypes.StrategyTimer{},
+	UseStrategy: &ChainAccountsStrategyTypes.StrategyRequestLimit{
+		// only allow 30 requests
+		LimitAmount: 30,
+		// every 30 second (30000ms)
+		LimitPerInterval: 30000,
+	},
 }
 
 func getChainUrl(chainType string) (string, error) {
