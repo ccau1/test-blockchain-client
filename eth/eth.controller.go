@@ -7,10 +7,13 @@ import (
 	"github.com/go-chi/render"
 	"github.com/go-chi/chi/v5"
 
+	"github.com/ccau1/test-blockchain-client/chain_base"
 	"github.com/ccau1/test-blockchain-client/utils"
 )
 
 var DEFAULT_JSON_VERSION = "2.0"
+
+var CallPolygonRPC = chain_base.CallPolygonRPCFactory("eth")
 
 func c_getBlockNumber(rw http.ResponseWriter, r *http.Request) {
 	// get param fields
