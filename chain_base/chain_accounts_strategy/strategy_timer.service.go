@@ -7,6 +7,15 @@ import (
 	"math/rand"
 )
 
+/**
+
+DISCLAIMER:: 	Wrong implementation, timer should be used for different endpoints (per provider) instead
+							of applying to different accounts of the same endpoint. This will be removed when handling
+							different provider endpoints has been implemented. Current level is for handling multiple
+							accounts to one provider endpoint
+
+**/
+
 // the fastest time idx can only stay the king for
 // this amount of MS before being contested again
 var FASTEST_TIME_STREAK_LIMIT_MS = 1000 * 60 * 10
