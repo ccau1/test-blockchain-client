@@ -1,6 +1,7 @@
 package chain_account_handler
 
 import (
+	"github.com/ccau1/test-blockchain-client/utils"
 	"github.com/ccau1/test-blockchain-client/chain_base/chain_account"
 	ChainAccountsStrategyTypes "github.com/ccau1/test-blockchain-client/chain_base/chain_accounts_strategy"
 )
@@ -16,6 +17,7 @@ type ChainAccountsHandler struct {
 	chainList *[]ChainAccount
 	chainAccountsStrategy *IChainAccountsStrategy
 
+	Provider string
 	UseStrategy IChainAccountsStrategy
 }
 
@@ -41,7 +43,8 @@ func (x *ChainAccountsHandler) LoadChainStrategy(strategy ChainAccountsStrategyT
 }
 
 func (x *ChainAccountsHandler) LoadChainAccountList() (*ChainAccountsHandler) {
-	// TODO: need to fetch from DB
+	// TODO: need to fetch from DB based on x.Provider
+	utils.Log.Infof("[Chain Account Handler] fetching DB for chain provider accounts with provider type: %s", x.Provider)
 	// set list of chain accounts to chainList
 	x.chainList = &[]ChainAccount {
 		ChainAccount {

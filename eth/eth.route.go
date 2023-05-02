@@ -7,9 +7,9 @@ import (
 func Router() chi.Router {
 	r := chi.NewRouter()
 
-	r.Get("/block-number/{id}", c_getBlockNumber)
+	r.Get("/block-number", c_getBlockNumber)
 
-	r.Get("/block-by-number/{id}", c_getBlockByNumber)
+	r.Get("/block-by-number/{blockNumber}", c_getBlockByNumber)
 
 	return r
 }

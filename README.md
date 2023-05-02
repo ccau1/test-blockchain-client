@@ -44,6 +44,7 @@ gomon .
   - move terraform to its own repo so it separates DevOps from developers
 - manually set secrets into secrets manager and read secrets into env on deploy
 - instead of retrieving IAM user's access key to set in github, can change to using OIDC
+- move some of the accounts strategy data to using MemCache so multiple instances can decide on which request to call based on single source of truth
 
 ## TODO
 
@@ -57,8 +58,10 @@ gomon .
 
 [x] set terraform for different env
 
+[x] use multiple accounts under a rpc endpoint
+
 [ ] handle rpc endpoints based on endpoints returned errors
 
 [ ] handle rpc endpoints based on speed
 
-[ ] add a proxy (separate service for each provider, single entry point for wallet side to communicate with)
+[ ] add a proxy (separate service for each chain type, single entry point for wallet side to communicate with all chain types)

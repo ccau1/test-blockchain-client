@@ -5,19 +5,19 @@ generated docs.
 ## Routes
 
 <details>
-<summary>`/eth/block-by-number/{id}`</summary>
+<summary>`/eth/block-by-number/{blockNumber}`</summary>
 
 - **/eth**
-	- **/block-by-number/{id}**
+	- **/block-by-number/{blockNumber}**
 		- _GET_
 			- [c_getBlockByNumber]()
 
 </details>
 <details>
-<summary>`/eth/block-number/{id}`</summary>
+<summary>`/eth/block-number`</summary>
 
 - **/eth**
-	- **/block-number/{id}**
+	- **/block-number**
 		- _GET_
 			- [c_getBlockNumber]()
 

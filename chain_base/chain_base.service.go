@@ -13,6 +13,10 @@ import (
 type ChainAccountsHandler = chain_account_handler.ChainAccountsHandler
 
 var chainAccountsHandler *ChainAccountsHandler = &ChainAccountsHandler{
+	// chain accounts handler will fetch accounts based on provider name
+	Provider: "ankr",
+	// the strategy to use for deciding which account to use for the 
+	// coming request
 	UseStrategy: &ChainAccountsStrategyTypes.StrategyRequestLimit{
 		// only allow 30 requests
 		LimitAmount: 30,
