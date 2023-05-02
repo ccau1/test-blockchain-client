@@ -7,27 +7,34 @@ import (
 
 type ChainAccount = chain_account.ChainAccount
 
+type DefaultChainAccountsStrategy = ChainAccountsStrategyTypes.StrategyLoop
+
 
 type ChainAccountsHandler struct {
 	loaded bool
 	chainList *[]ChainAccount
-	chainSelectorStrategy *ChainAccountsStrategyTypes.IChainSelectorStrategy
+	chainAccountsStrategy *ChainAccountsStrategyTypes.IChainAccountsStrategy
+
+	UseStrategy ChainAccountsStrategyTypes.IChainAccountsStrategy
 }
 
 func (x *ChainAccountsHandler) Load() (*ChainAccountsHandler) {
+	if (x.UseStrategy == nil) {
+		x.UseStrategy = &DefaultChainAccountsStrategy{}
+	}
 	// load chain account list into handler
 	x.LoadChainAccountList()
 	// load strategy into handler
-	x.LoadChainStrategy(&ChainAccountsStrategyTypes.StrategyLoop{})
+	x.LoadChainStrategy(x.UseStrategy)
 	// return self for chaining
 	return x
 }
 
-func (x *ChainAccountsHandler) LoadChainStrategy(strategy ChainAccountsStrategyTypes.IChainSelectorStrategy) (*ChainAccountsHandler) {
+func (x *ChainAccountsHandler) LoadChainStrategy(strategy ChainAccountsStrategyTypes.IChainAccountsStrategy) (*ChainAccountsHandler) {
 	// load strategy with chain list
 	strategy.Load(x.chainList)
 	// store strategy in handler
-	x.chainSelectorStrategy = &strategy
+	x.chainAccountsStrategy = &strategy
 	// return self for chaining
 	return x
 }
@@ -53,8 +60,8 @@ func (x *ChainAccountsHandler) LoadChainAccountList() (*ChainAccountsHandler) {
 		},
 	}
 	// if strategy exists, update it with chain list
-	if (x.chainSelectorStrategy != nil) {
-		(*x.chainSelectorStrategy).Load(x.chainList)
+	if (x.chainAccountsStrategy != nil) {
+		(*x.chainAccountsStrategy).Load(x.chainList)
 	}
 	// return self for chaining
 	return x
@@ -64,7 +71,7 @@ func (x *ChainAccountsHandler) GetNextAccount() (*ChainAccount, error) {
 	// ensure handler is loaded
 	x.EnsureInitialLoad()
 	// determine how to get the next chain account to use
-	return (*x.chainSelectorStrategy).GetNextAccount()
+	return (*x.chainAccountsStrategy).GetNextAccount()
 }
 
 func (x *ChainAccountsHandler) EnsureInitialLoad() {

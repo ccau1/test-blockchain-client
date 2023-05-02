@@ -6,7 +6,7 @@ import (
 
 type ChainAccount = chain_account.ChainAccount
 
-type IChainSelectorStrategy interface {
+type IChainAccountsStrategy interface {
 	Load(chainAccountList *[]ChainAccount)
 	GetNextAccount() (*ChainAccount, error)
 }

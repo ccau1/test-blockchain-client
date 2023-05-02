@@ -7,9 +7,14 @@ import (
 	"net/http"
 
 	"github.com/ccau1/test-blockchain-client/chain_base/chain_account_handler"
+	ChainAccountsStrategyTypes "github.com/ccau1/test-blockchain-client/chain_base/chain_accounts_strategy"
 )
 
-var chainAccountsHandler *chain_account_handler.ChainAccountsHandler = &chain_account_handler.ChainAccountsHandler{}
+type ChainAccountsHandler = chain_account_handler.ChainAccountsHandler
+
+var chainAccountsHandler *ChainAccountsHandler = &ChainAccountsHandler{
+	UseStrategy: &ChainAccountsStrategyTypes.StrategyTimer{},
+}
 
 func getChainUrl(chainType string) (string, error) {
 	// get chain account to use

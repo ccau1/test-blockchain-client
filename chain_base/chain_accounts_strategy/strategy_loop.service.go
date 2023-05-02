@@ -24,15 +24,13 @@ func (x *StrategyLoop) GetNextAccount() (*ChainAccount, error) {
 	}
 	// set new current position
 	if (x.currentPos + 1 >= len(*x.chainList)) {
-		log.Println("In 1")
 		// reached end, reset to 0
 		x.currentPos = 0
 	} else {
-		log.Println("In 2")
 		// more to add, add now
 		x.currentPos = x.currentPos + 1
 	}
-	log.Printf("current pos: %d\n", x.currentPos)
+	log.Printf("chain account fetch pos: %d\n", x.currentPos)
 	// return chain account with no errors
 	return &(*x.chainList)[x.currentPos], nil
 }
