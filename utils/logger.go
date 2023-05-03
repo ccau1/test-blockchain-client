@@ -11,7 +11,7 @@ func InitLogger() {
 	// set out to stdout
 	Log.Out = os.Stdout
 	// set true to displaying calling method
-	Log.SetReportCaller(true)
+	Log.SetReportCaller(false)
 	// if env is not dev, use the logrus formatter
 	// for monitoring systems
 	if os.Getenv("ENV") != "dev" {

@@ -1,4 +1,4 @@
-package chain_accounts_strategy
+package provider_accounts_strategy
 
 import (
 	"time"
@@ -14,8 +14,8 @@ type RequestTrackerItem struct {
 	intervalStart int
 }
 
-type StrategyRequestLimit struct {
-	chainList *[]ChainAccount
+type RequestLimitStrategy struct {
+	providerAccounts *[]ProviderAccount
 
 	// requests amount limited
 	LimitAmount int
@@ -28,33 +28,33 @@ type StrategyRequestLimit struct {
 	reqTrackerList *[]*RequestTrackerItem
 }
 
-func (x *StrategyRequestLimit) Load(chainAccountList *[]ChainAccount) {
+func (x *RequestLimitStrategy) Load(newProviderAccountsList *[]ProviderAccount) {
 	// if chain account list not provided, throw error
-	if (chainAccountList == nil || len(*chainAccountList) == 0) {
+	if (newProviderAccountsList == nil || len(*newProviderAccountsList) == 0) {
 		panic(errors.New("chain account list not provided"))
 	}
 	// store chain list
-	x.chainList = chainAccountList
+	x.providerAccounts = newProviderAccountsList
 	// instantiate length of reqTrackerList
-	newReqTrackerList := make([]*RequestTrackerItem, len(*x.chainList))
+	newReqTrackerList := make([]*RequestTrackerItem, len(*x.providerAccounts))
 	x.reqTrackerList = &newReqTrackerList
 }
 
-func (x *StrategyRequestLimit) GetNextAccount() (*ChainAccount, error) {
+func (x *RequestLimitStrategy) GetNextAccount() (*ProviderAccount, error) {
 	// if chain list not available, throw error
-	if (x.chainList == nil || len(*x.chainList) == 0) {
+	if (x.providerAccounts == nil || len(*x.providerAccounts) == 0) {
 		return nil, errors.New("chain account list not loaded")
 	}
-	chainAccountIdx := x.getUsableChainAccountIndex()
+	chainAccountIdx := x.getUsableProviderAccountIndex()
 	utils.Log.Infof("[RequestLimitStrategy] using chain account idx: %d", chainAccountIdx)
 	
 	(*(*x.reqTrackerList)[chainAccountIdx]).count++
 
 	// return fastest
-	return &(*x.chainList)[chainAccountIdx], nil
+	return &(*x.providerAccounts)[chainAccountIdx], nil
 }
 
-func (x *StrategyRequestLimit) getUsableChainAccountIndex() int {
+func (x *RequestLimitStrategy) getUsableProviderAccountIndex() int {
 	// if req tracker list doesn't have this index, instantiate now
 	if ((*x.reqTrackerList)[x.currentTrackerIdx] == nil) {
 		(*x.reqTrackerList)[x.currentTrackerIdx] = &RequestTrackerItem{
@@ -80,7 +80,7 @@ func (x *StrategyRequestLimit) getUsableChainAccountIndex() int {
 		// first account tracker has reset, go back to first one
 		x.currentTrackerIdx = 0
 		return 0
-	} else if (x.currentTrackerIdx + 1 == len(*x.chainList)) {
+	} else if (x.currentTrackerIdx + 1 == len(*x.providerAccounts)) {
 		utils.Log.Infof("[RequestLimitStrategy] [tracker %d] already at last account, just use this one", x.currentTrackerIdx)
 		// already at last account, just use this one
 		return x.currentTrackerIdx
@@ -88,11 +88,11 @@ func (x *StrategyRequestLimit) getUsableChainAccountIndex() int {
 		utils.Log.Infof("[RequestLimitStrategy] [tracker %d] current idx reached limit, go to next idx", x.currentTrackerIdx)
 		// current idx reached limit, go to next idx
 		x.currentTrackerIdx = x.currentTrackerIdx + 1
-		return x.getUsableChainAccountIndex()
+		return x.getUsableProviderAccountIndex()
 	}
 }
 
-func (x *StrategyRequestLimit) cleanReqTracker(reqTracker *RequestTrackerItem) *RequestTrackerItem {
+func (x *RequestLimitStrategy) cleanReqTracker(reqTracker *RequestTrackerItem) *RequestTrackerItem {
 	if (x.getCurrentMS() - (*reqTracker).intervalStart > x.LimitPerInterval) {
 		// tracker interval has passed, reset it
 		(*reqTracker).count = 0
@@ -101,7 +101,7 @@ func (x *StrategyRequestLimit) cleanReqTracker(reqTracker *RequestTrackerItem) *
 	return reqTracker
 }
 
-func (x *StrategyRequestLimit) getCurrentMS() int {
+func (x *RequestLimitStrategy) getCurrentMS() int {
 	// create a time variable
 	now := time.Now()
 

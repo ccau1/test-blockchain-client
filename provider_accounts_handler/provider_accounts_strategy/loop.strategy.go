@@ -1,29 +1,29 @@
-package chain_accounts_strategy
+package provider_accounts_strategy
 
 import (
 	"log"
 	"errors"
 )
 
-type StrategyLoop struct {
-	chainList *[]ChainAccount
+type LoopStrategy struct {
+	providerAccounts *[]ProviderAccount
 	currentPos int
 }
 
-func (x *StrategyLoop) Load(chainAccountList *[]ChainAccount) {
+func (x *LoopStrategy) Load(newProviderAccountsList *[]ProviderAccount) {
 	// store chain list
-	x.chainList = chainAccountList
+	x.providerAccounts = newProviderAccountsList
 	// set default position to 0
 	x.currentPos = 0
 }
 
-func (x *StrategyLoop) GetNextAccount() (*ChainAccount, error) {
+func (x *LoopStrategy) GetNextAccount() (*ProviderAccount, error) {
 	// if chain list not available, throw error
-	if (x.chainList == nil || len(*x.chainList) == 0) {
+	if (x.providerAccounts == nil || len(*x.providerAccounts) == 0) {
 		return nil, errors.New("chain account list not loaded")
 	}
 	// set new current position
-	if (x.currentPos + 1 >= len(*x.chainList)) {
+	if (x.currentPos + 1 >= len(*x.providerAccounts)) {
 		// reached end, reset to 0
 		x.currentPos = 0
 	} else {
@@ -32,5 +32,5 @@ func (x *StrategyLoop) GetNextAccount() (*ChainAccount, error) {
 	}
 	log.Printf("chain account fetch pos: %d\n", x.currentPos)
 	// return chain account with no errors
-	return &(*x.chainList)[x.currentPos], nil
+	return &(*x.providerAccounts)[x.currentPos], nil
 }

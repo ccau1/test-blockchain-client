@@ -8,12 +8,14 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/ccau1/test-blockchain-client/utils"
-	ChainBase "github.com/ccau1/test-blockchain-client/chain_base"
+	"github.com/ccau1/test-blockchain-client/providers_handler"
 )
+
+type GetNextProviderFilter = providers_handler.GetNextProviderFilter
 
 var DEFAULT_JSON_VERSION = "2.0"
 
-var CallPolygonRPC = ChainBase.CallPolygonRPCFactory("eth")
+var providersHandler = &providers_handler.ProvidersHandler{}
 
 func c_getBlockNumber(rw http.ResponseWriter, r *http.Request) {
 	// get query fields
@@ -38,8 +40,10 @@ func c_getBlockNumber(rw http.ResponseWriter, r *http.Request) {
 		ID: batchId,
 	}
 	requestBodyByte, _ := json.Marshal(body)
+	// get provider to handle this call
+	provider := providersHandler.GetNextProvider(GetNextProviderFilter{ ChainType: "eth" })
 	// fetch result from polygonRPC
-	result, err := CallPolygonRPC(requestBodyByte)
+	result, err := (*provider).Call("eth", requestBodyByte)
 	if err != nil {
 		render.Render(rw, r, utils.ErrServerError("PolygonRPC request error: " + err.Error()))
 		return
@@ -82,8 +86,10 @@ func c_getBlockByNumber(rw http.ResponseWriter, r *http.Request) {
 		},
 	}
 	requestBodyByte, _ := json.Marshal(body)
-	// fetch result from polygonRPC
-	result, err := CallPolygonRPC(requestBodyByte)
+	// get provider to handle this call
+	provider := providersHandler.GetNextProvider(GetNextProviderFilter{ ChainType: "eth" })
+	// fetch result from provider call
+	result, err := (*provider).Call("eth", requestBodyByte)
 	if err != nil {
 		render.Render(rw, r, utils.ErrServerError("PolygonRPC request error: " + err.Error()))
 		return

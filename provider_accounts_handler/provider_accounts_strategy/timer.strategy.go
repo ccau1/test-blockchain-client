@@ -1,4 +1,4 @@
-package chain_accounts_strategy
+package provider_accounts_strategy
 
 import (
 	"time"
@@ -25,8 +25,8 @@ var FASTEST_TIME_STREAK_LIMIT_MS = 1000 * 60 * 10
 // 0 - 100 as percent
 var VOLUNTEER_TEST_TIME_PERCENTAGE = 30
 
-type StrategyTimer struct {
-	chainList *[]ChainAccount
+type TimerStrategy struct {
+	providerAccounts *[]ProviderAccount
 	timerMap *[]int
 
 	fastestIdx int
@@ -34,15 +34,15 @@ type StrategyTimer struct {
 	lastUpdatedFastest int
 }
 
-func (x *StrategyTimer) Load(chainAccountList *[]ChainAccount) {
+func (x *TimerStrategy) Load(newProviderAccountsList *[]ProviderAccount) {
 	// if chain account list not provided, throw error
-	if (chainAccountList == nil || len(*chainAccountList) == 0) {
+	if (newProviderAccountsList == nil || len(*newProviderAccountsList) == 0) {
 		panic(errors.New("chain account list not provided"))
 	}
 	// store chain list
-	x.chainList = chainAccountList
+	x.providerAccounts = newProviderAccountsList
 	// set timerMap slice size based on chain account list size
-	timerMap := make([]int, len(*x.chainList))
+	timerMap := make([]int, len(*x.providerAccounts))
 	x.timerMap = &timerMap
 	// trackers for fastest
 	x.fastestIdx = -1
@@ -50,9 +50,9 @@ func (x *StrategyTimer) Load(chainAccountList *[]ChainAccount) {
 	x.lastUpdatedFastest = -1
 }
 
-func (x *StrategyTimer) GetNextAccount() (*ChainAccount, error) {
+func (x *TimerStrategy) GetNextAccount() (*ProviderAccount, error) {
 	// if chain list not available, throw error
-	if (x.chainList == nil || len(*x.chainList) == 0) {
+	if (x.providerAccounts == nil || len(*x.providerAccounts) == 0) {
 		return nil, errors.New("chain account list not loaded")
 	}
 
@@ -60,29 +60,29 @@ func (x *StrategyTimer) GetNextAccount() (*ChainAccount, error) {
 	// do a random speed test
 	if (x.fastestIdx == -1 || rand.Intn(100) <= VOLUNTEER_TEST_TIME_PERCENTAGE) {
 		// try another account. We'll randomize idx to try
-		tryoutIdx := int(math.Floor((rand.Float64() - 0.01) * float64(len(*x.chainList))))
-		// run speed test at idxchainAccountList
+		tryoutIdx := int(math.Floor((rand.Float64() - 0.01) * float64(len(*x.providerAccounts))))
+		// run speed test at idx
 		x.runSpeedTest(tryoutIdx)
 	}
 	// return fastest
-	return &(*x.chainList)[x.fastestIdx], nil
+	return &(*x.providerAccounts)[x.fastestIdx], nil
 }
 
-func (x *StrategyTimer) runSpeedTest(idx int) {
+func (x *TimerStrategy) runSpeedTest(idx int) {
 	// get chain account by idx
-	chainAcc := &(*x.chainList)[idx]
+	providerAcc := &(*x.providerAccounts)[idx]
 	// test out speed
-	(*x.timerMap)[idx] = x.getAccountSpeed(chainAcc)
+	(*x.timerMap)[idx] = x.getAccountSpeed(providerAcc)
 	// set response time and update fastest
 	x.setResponseTime(idx, (*x.timerMap)[idx])
 }
 
-func (x *StrategyTimer) getAccountSpeed(chainAccount *ChainAccount) int {
+func (x *TimerStrategy) getAccountSpeed(providerAccount *ProviderAccount) int {
 	// TODO: how to test time? how to get url to ping?
 	return 1
 }
 
-func (x *StrategyTimer) setResponseTime(idx int, time int) {
+func (x *TimerStrategy) setResponseTime(idx int, time int) {
 	(*x.timerMap)[idx] = time
 
 	if (x.fastestTime == -1 || time < x.fastestTime || x.getCurrentMS() - x.lastUpdatedFastest > FASTEST_TIME_STREAK_LIMIT_MS) {
@@ -94,7 +94,7 @@ func (x *StrategyTimer) setResponseTime(idx int, time int) {
 	}
 }
 
-func (x *StrategyTimer) getCurrentMS() int {
+func (x *TimerStrategy) getCurrentMS() int {
 		// create a time variable
 		now := time.Now()
 
