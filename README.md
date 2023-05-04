@@ -1,5 +1,30 @@
 # test-blockchain-client
 
+## Ideology
+
+### Problem
+We want a proxy where different wallet chains can go through this service to trigger actions or fetch information. Items to concern includes:
+
+- manage multiple providers per chain type
+- manage navigating through providers that cannot connect
+- manage selecting provider based on response time
+- reduce expenditure on provider usage
+- scalable services for each chain type
+
+### Solution
+
+![Proxy Diagram](/proxy-diagram.png)
+
+There are two main layers: Providers and ProviderAccounts
+
+Providers holds a list of different Providers, all of which defines the same methods (ie. GetBlockNumber, GetBlockByNumber). Each provider define how to communicate with its corresponding provider endpoint.
+
+ProviderAccounts holds a list of provider's accounts. This way, we can use multiple accounts per provider, based on our needs (ie. rotate between them on reaching quota limit).
+
+Both Providers and ProviderAccounts can have a layer of strategy that defines how to select which Provider/ProviderAccount to use.
+
+A proxy helps centralize all chain route methods
+
 ## Setup
 
 copy .env.example to your needed env `.env.{environment}`
