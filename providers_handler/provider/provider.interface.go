@@ -1,6 +1,6 @@
 package provider
 
-type BlockNumberTransaction struct {
+type ChainBlockTransaction struct {
 	BlockHash string `json:"blockHash"`
 	BlockNumber string `json:"blockNumber"`
 	From string `json:"from"`
@@ -19,7 +19,7 @@ type BlockNumberTransaction struct {
 	S string `json:"s"`
 }
 
-type BlockNumber struct {
+type ChainBlock struct {
 	Difficulty string `json:"difficulty"`
 	ExtraData string `json:"extraData"`
 	GasLimit string `json:"gasLimit"`
@@ -37,7 +37,7 @@ type BlockNumber struct {
 	StateRoot string `json:"stateRoot"`
 	Timestamp string `json:"timestamp"`
 	TotalDifficulty string `json:"totalDifficulty"`
-	Transactions []BlockNumberTransaction `json:"transactions"`
+	Transactions []ChainBlockTransaction `json:"transactions"`
 	TransactionsRoot string `json:"transactionsRoot"`
 	Uncles []string `json:"uncles"`
 }
@@ -45,5 +45,5 @@ type BlockNumber struct {
 type IProvider interface {
 	SupportedChains() []string
 	GetLatestBlockNumber(chainType string) (string, error)
-	GetByBlockNumber(chainType string, blockNumber string) (interface{}, error)
+	GetByBlockNumber(chainType string, blockNumber string) (ChainBlock, error)
 }

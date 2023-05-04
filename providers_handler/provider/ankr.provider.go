@@ -22,10 +22,10 @@ type GetBlockNumberBody struct {
 	Params			[]interface{} `json:"params"`
 }
 
-type CallResponse struct {
+type CallResponse[T any] struct {
 	JSONRPC    	string `json:"jsonrpc"`
 	ID 					int `json:"id"`
-	Result    	interface{} `json:"result"`
+	Result    	T `json:"result"`
 	Error				*CallResponseError `json:"error"`
 }
 
@@ -53,18 +53,6 @@ var providerAccountsHandler *ProviderAccountsHandler = &ProviderAccountsHandler{
 	},
 }
 
-func (x *AnkrProvider) generateUrl(chainType string) (string, error) {
-	// get chain account to use
-	chainAccount, err := providerAccountsHandler.GetNextAccount()
-	if (err != nil) {
-		return "", err
-	}
-	// format and return url for chain based on:
-	// - chain type
-	// - chain account id
-	return fmt.Sprintf("https://rpc.ankr.com/%s/%s", chainType, chainAccount.ID), nil
-}
-
 func (x *AnkrProvider) SupportedChains() []string {
 	return []string {
 		"eth",
@@ -80,14 +68,14 @@ func (x *AnkrProvider) GetLatestBlockNumber(chainType string) (string, error) {
 		ID: 1,
 	}
 	requestBodyByte, _ := json.Marshal(body)
-	result, err := x.call(chainType, requestBodyByte)
+	result, err := callAnkrProvider[string](chainType, requestBodyByte)
 
-	intNum, err := strconv.ParseInt(strings.ReplaceAll(result.(string), "0x", ""), 16, 64)
+	intNum, err := strconv.ParseInt(strings.ReplaceAll(result, "0x", ""), 16, 64)
 
 	return fmt.Sprint(intNum), err
 }
 
-func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (interface{}, error) {
+func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (ChainBlock, error) {
 	// Encode the data
 	body := &GetBlockNumberBody{
 		JSONRPC: "2.0",
@@ -99,10 +87,10 @@ func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (i
 		},
 	}
 	requestBodyByte, _ := json.Marshal(body)
-	result, err := x.call(chainType, requestBodyByte)
+	result, err := callAnkrProvider[ChainBlock](chainType, requestBodyByte)
 
 	if err != nil {
-		return BlockNumber{}, err
+		return ChainBlock{}, err
 	}
 
 	utils.Log.Infof("[GetByBlockNumber] result: %+v", result)
@@ -110,11 +98,23 @@ func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (i
 	return result, err
 }
 
-func (x *AnkrProvider) call(chainType string, body []byte) (interface{}, error) {
+func generateUrl(chainType string) (string, error) {
+	// get chain account to use
+	chainAccount, err := providerAccountsHandler.GetNextAccount()
+	if (err != nil) {
+		return "", err
+	}
+	// format and return url for chain based on:
+	// - chain type
+	// - chain account id
+	return fmt.Sprintf("https://rpc.ankr.com/%s/%s", chainType, chainAccount.ID), nil
+}
+
+func callAnkrProvider[Result any](chainType string, body []byte) (Result, error) {
 	// call provider to retrieve info
-	providerDomain, err := x.generateUrl(chainType)
+	providerDomain, err := generateUrl(chainType)
 	if err != nil {
-		return nil, err
+		return *new(Result), err
 	}
 
 	utils.Log.Infof("[call] url: %s", providerDomain)
@@ -125,7 +125,7 @@ func (x *AnkrProvider) call(chainType string, body []byte) (interface{}, error) 
 		bytes.NewBuffer(body), 	// body (as buffer)
 	)
 	if err != nil {
-		return nil, err
+		return *new(Result), err
 	}
 
 	// get content from response
@@ -134,22 +134,18 @@ func (x *AnkrProvider) call(chainType string, body []byte) (interface{}, error) 
 
 	utils.Log.Infof("[call] resContent raw: %+v", string(resContent))
 
-	var callResponse CallResponse
+	var callResponse CallResponse[Result]
 	err = json.Unmarshal(resContent, &callResponse)
 
 	if err != nil {
 		utils.Log.Infof("[call] err: %+v", err)
-		return nil, err
+		return *new(Result), err
 	}
 	
 	utils.Log.Infof("[call] callResponse: %+v", callResponse)
 
 	if (callResponse.Error != nil) {
-		return nil, errors.New(fmt.Sprintf("[call] response error: [%d] %s", callResponse.Error.Code, callResponse.Error.Message))
-	}
-
-	if callResponse.Result == nil {
-		return nil, errors.New("[call] request result is nil")
+		return *new(Result), errors.New(fmt.Sprintf("[call] response error: [%d] %s", callResponse.Error.Code, callResponse.Error.Message))
 	}
 
 	return callResponse.Result, nil
