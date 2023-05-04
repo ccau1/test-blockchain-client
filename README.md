@@ -2,13 +2,13 @@
 
 ## Table of Content
 
-- [Ideology](##ideology)
-- [Setup](##setup)
-- [Start Application](##start-application)
-- [API Calls](##api-calls)
-- [Terraform](##terraform)
+- [Ideology](#ideology)
+- [Setup](#setup)
+- [Start Application](#start-application)
+- [API Calls](#api-calls)
+- [Terraform](#terraform)
 - [Production Ready Requirement](#production-ready-requirement)
-- [TODO](##todo)
+- [TODO](#todo)
 
 ## Ideology
 
