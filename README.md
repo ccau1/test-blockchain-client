@@ -1,8 +1,18 @@
 # test-blockchain-client
 
+## Table of Content
+
+- [Ideology](##ideology)
+- [Setup](##setup)
+- [Start Application](##start-application)
+- [API Calls](##api-calls)
+- [Terraform](##terraform)
+- [Production Ready Requirement](#production-ready-requirement)
+- [TODO](##todo)
+
 ## Ideology
 
-### Problem
+### The Problem
 We want a proxy where different wallet chains can go through this service to trigger actions or fetch information. Items to concern includes:
 
 - manage multiple providers per chain type
@@ -32,7 +42,7 @@ copy .env.example to your needed env `.env.{environment}`
 cp .env.example .env.dev
 ```
 
-## Start
+## Start Application
 
 ### Docker Compose
 
