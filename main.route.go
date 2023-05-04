@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/ccau1/test-blockchain-client/eth"
+	"github.com/ccau1/test-blockchain-client/proxy"
 )
 
 func GenRoute() *chi.Mux {
@@ -10,7 +10,7 @@ func GenRoute() *chi.Mux {
 	r := chi.NewRouter()
 
 	// mount routers
-	r.Mount("/eth", eth.Router())
+	r.Mount("/", proxy.Router())
 
 	return r
 }

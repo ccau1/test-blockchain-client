@@ -2,7 +2,7 @@
 
 ## Setup
 
-set .env
+copy .env.example to your needed env `.env.{environment}`
 ```
 cp .env.example .env.dev
 ```
@@ -19,6 +19,33 @@ docker-compose --env-file .env.dev up --build
 
 ```
 gomon .
+```
+
+## API Calls
+
+### Block Number
+fetch latest block number
+
+#### Queries
+`batchId` (optional) - a unique number in case of batching
+
+`jsonrpc` (optional) - json rpc version
+```
+[GET] localhost:3000/eth/{blockNumber}?batchId=3&jsonrpc=2.0
+```
+
+### Block by Number
+fetch block number by number
+
+#### Params
+`blockNumber` - block number to fetch
+
+#### Queries
+`batchId` (optional) - a unique number in case of batching
+
+`jsonrpc` (optional) - json rpc version
+```
+[GET] localhost:3000/eth/block-number/blockNumber?batchId=3&jsonrpc=2.0
 ```
 
 ## Terraform
@@ -60,8 +87,8 @@ gomon .
 
 [x] use multiple accounts under a rpc endpoint
 
-[ ] handle rpc endpoints based on endpoints returned errors
+[ ] handle rotating providers based on endpoints returned errors
 
-[ ] handle rpc endpoints based on speed
+[ ] handle rotating providers based on speed
 
-[ ] add a proxy (separate service for each chain type, single entry point for wallet side to communicate with all chain types)
+[x] add a proxy (separate service for each chain type, single entry point for wallet side to communicate with all chain types)
