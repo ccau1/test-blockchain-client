@@ -22,20 +22,16 @@ type GetBlockNumberBody struct {
 	Params			[]interface{} `json:"params"`
 }
 
-type CallResponse[T any] struct {
+type AnkrCallResponse[T any] struct {
 	JSONRPC    	string `json:"jsonrpc"`
 	ID 					int `json:"id"`
 	Result    	T `json:"result"`
-	Error				*CallResponseError `json:"error"`
+	Error				*AnkrCallResponseError `json:"error"`
 }
 
-type CallResponseError struct {
+type AnkrCallResponseError struct {
 	Code				int `json:"code"`
 	Message			string `json:"message"`
-}
-
-type AnkrProvider struct {
-	
 }
 
 type ProviderAccountsHandler = provider_accounts_handler.ProviderAccountsHandler
@@ -51,6 +47,10 @@ var providerAccountsHandler *ProviderAccountsHandler = &ProviderAccountsHandler{
 		// every 30 second (30000ms)
 		LimitPerInterval: 30000,
 	},
+}
+
+type AnkrProvider struct {
+	
 }
 
 func (x *AnkrProvider) SupportedChains() []string {
@@ -117,7 +117,7 @@ func callAnkrProvider[Result any](chainType string, body []byte) (Result, error)
 		return *new(Result), err
 	}
 
-	utils.Log.Infof("[call] url: %s", providerDomain)
+	utils.Log.Infof("[callAnkrProvider] url: %s", providerDomain)
 
 	res, err := http.Post(
 		providerDomain,					// url
@@ -132,20 +132,20 @@ func callAnkrProvider[Result any](chainType string, body []byte) (Result, error)
 	defer res.Body.Close()
 	resContent, err := ioutil.ReadAll(res.Body)
 
-	utils.Log.Infof("[call] resContent raw: %+v", string(resContent))
+	utils.Log.Infof("[callAnkrProvider] resContent raw: %+v", string(resContent))
 
-	var callResponse CallResponse[Result]
+	var callResponse AnkrCallResponse[Result]
 	err = json.Unmarshal(resContent, &callResponse)
 
 	if err != nil {
-		utils.Log.Infof("[call] err: %+v", err)
+		utils.Log.Infof("[callAnkrProvider] err: %+v", err)
 		return *new(Result), err
 	}
 	
-	utils.Log.Infof("[call] callResponse: %+v", callResponse)
+	utils.Log.Infof("[callAnkrProvider] callResponse: %+v", callResponse)
 
 	if (callResponse.Error != nil) {
-		return *new(Result), errors.New(fmt.Sprintf("[call] response error: [%d] %s", callResponse.Error.Code, callResponse.Error.Message))
+		return *new(Result), errors.New(fmt.Sprintf("[callAnkrProvider] response error: [%d] %s", callResponse.Error.Code, callResponse.Error.Message))
 	}
 
 	return callResponse.Result, nil

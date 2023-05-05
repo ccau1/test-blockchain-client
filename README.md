@@ -61,37 +61,37 @@ gomon .
 ### Block Number
 fetch latest block number
 
-#### Queries
-`batchId` (optional) - a unique number in case of batching
+#### Params
 
-`jsonrpc` (optional) - json rpc version
+`chainType` - code for a chain type (ie. eth, bsc)
+
 ```
-[GET] localhost:3000/eth/{blockNumber}?batchId=3&jsonrpc=2.0
+[GET] localhost:3000/{chainType}/block-number
 ```
 
 ### Block by Number
 fetch block number by number
 
 #### Params
+`chainType` - code for a chain type (ie. eth, bsc)
+
 `blockNumber` - block number to fetch
 
-#### Queries
-`batchId` (optional) - a unique number in case of batching
-
-`jsonrpc` (optional) - json rpc version
 ```
-[GET] localhost:3000/eth/block-number/blockNumber?batchId=3&jsonrpc=2.0
+[GET] localhost:3000/{chainType}/block-by-number/{blockNumber}
 ```
 
 ## Terraform
 
+![Terraform Diagram](/terraform/terraform_ecs.png)
+
 1. setup aws account for terraform
-2. set IAM user for terraform (will need to define policy based on terraform needs)
+2. set IAM user for terraform (will need to define policy permissions based on terraform needs)
 3. set IAM credential to `~/.aws/credentials` with profile name `blockchain-client-terraform`
 4. run `terraform plan` to prepare changes to AWS
 5. run `terraform apply` to apply prepared changes to AWS
 6. copy `${env}_deploy_access_key_id` from output of step 5 to store in github action secrets `AWS_ACCESS_KEY_ID`
-7. copy secret from the following command to store in github action secrets `AWS_SECRET_ACCESS_KEY`: `terraform state pull | jq '.resources[] | select(.type == "aws_iam_access_key") | .instances[0].attributes'`
+7. copy secret from the following command to store in github action secrets `AWS_SECRET_ACCESS_KEY`: ```terraform state pull | jq '.resources[] | select(.type == "aws_iam_access_key") | .instances[0].attributes'```
 
 ## Production Ready Requirement
 

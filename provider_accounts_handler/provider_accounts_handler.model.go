@@ -53,18 +53,23 @@ func (x *ProviderAccountsHandler) LoadProviderAccountList() (*ProviderAccountsHa
 	x.providerAccounts = &[]ProviderAccount {
 		ProviderAccount {
 			ID: "bc4a5e44c384043c047f9a768e3c6b8d3064fd470b430f8e1a9d265114118e5d",
+			ProviderType: "ankr",
 		},
 		ProviderAccount {
 			ID: "bc4a5e44c384043c047f9a768e3c6b8d3064fd470b430f8e1a9d265114118e5d",
+			ProviderType: "ankr",
 		},
 		ProviderAccount {
 			ID: "bc4a5e44c384043c047f9a768e3c6b8d3064fd470b430f8e1a9d265114118e5d",
+			ProviderType: "ankr",
 		},
 		ProviderAccount {
 			ID: "bc4a5e44c384043c047f9a768e3c6b8d3064fd470b430f8e1a9d265114118e5d",
+			ProviderType: "ankr",
 		},
 		ProviderAccount {
 			ID: "bc4a5e44c384043c047f9a768e3c6b8d3064fd470b430f8e1a9d265114118e5d",
+			ProviderType: "ankr",
 		},
 	}
 	// if strategy exists, update it with chain list
