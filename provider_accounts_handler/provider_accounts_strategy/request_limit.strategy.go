@@ -7,6 +7,8 @@ import (
 	"github.com/ccau1/test-blockchain-client/utils"
 )
 
+var Log = utils.Log.WithField("class", "RequestLimitStrategy")
+
 type RequestTrackerItem struct {
 	// request count
 	count int
@@ -41,12 +43,13 @@ func (x *RequestLimitStrategy) Load(newProviderAccountsList *[]ProviderAccount) 
 }
 
 func (x *RequestLimitStrategy) GetNextAccount() (*ProviderAccount, error) {
+	Log := Log.WithField("method", "GetNextAccount")
 	// if chain list not available, throw error
 	if (x.providerAccounts == nil || len(*x.providerAccounts) == 0) {
 		return nil, errors.New("chain account list not loaded")
 	}
 	chainAccountIdx := x.getUsableProviderAccountIndex()
-	utils.Log.Infof("[RequestLimitStrategy] using chain account idx: %d", chainAccountIdx)
+	Log.Infof("using chain account idx: %d", chainAccountIdx)
 	
 	(*(*x.reqTrackerList)[chainAccountIdx]).count++
 
@@ -55,6 +58,7 @@ func (x *RequestLimitStrategy) GetNextAccount() (*ProviderAccount, error) {
 }
 
 func (x *RequestLimitStrategy) getUsableProviderAccountIndex() int {
+	Log := Log.WithField("method", "getUsableProviderAccountIndex")
 	// if req tracker list doesn't have this index, instantiate now
 	if ((*x.reqTrackerList)[x.currentTrackerIdx] == nil) {
 		(*x.reqTrackerList)[x.currentTrackerIdx] = &RequestTrackerItem{
@@ -67,25 +71,25 @@ func (x *RequestLimitStrategy) getUsableProviderAccountIndex() int {
 	currentReqTracker := (*x.reqTrackerList)[x.currentTrackerIdx]
 
 	if (x.getCurrentMS() - currentReqTracker.intervalStart > x.LimitPerInterval) {
-		utils.Log.Infof("[RequestLimitStrategy] [tracker %d] current tracker interval has passed, reset now", x.currentTrackerIdx)
+		Log.Infof("[tracker %d] current tracker interval has passed, reset now", x.currentTrackerIdx)
 		// current tracker interval has passed, reset now
 		x.cleanReqTracker(currentReqTracker)
 		return x.currentTrackerIdx
 	} else if ((*currentReqTracker).count < x.LimitAmount) {
-		utils.Log.Infof("[RequestLimitStrategy] [tracker %d] still within its limit, continue at this idx [count: %d] [limit: %d]", x.currentTrackerIdx, (*currentReqTracker).count, x.LimitAmount)
+		Log.Infof("[tracker %d] still within its limit, continue at this idx [count: %d] [limit: %d]", x.currentTrackerIdx, (*currentReqTracker).count, x.LimitAmount)
 		// still within its limit, continue at this idx
 		return x.currentTrackerIdx
 	} else if ((*x.cleanReqTracker((*x.reqTrackerList)[0])).count == 0) {
-		utils.Log.Infof("[RequestLimitStrategy] [tracker %d] first account tracker has reset, go back to first one", x.currentTrackerIdx)
+		Log.Infof("[tracker %d] first account tracker has reset, go back to first one", x.currentTrackerIdx)
 		// first account tracker has reset, go back to first one
 		x.currentTrackerIdx = 0
 		return 0
 	} else if (x.currentTrackerIdx + 1 == len(*x.providerAccounts)) {
-		utils.Log.Infof("[RequestLimitStrategy] [tracker %d] already at last account, just use this one", x.currentTrackerIdx)
+		Log.Infof("[tracker %d] already at last account, just use this one", x.currentTrackerIdx)
 		// already at last account, just use this one
 		return x.currentTrackerIdx
 	} else {
-		utils.Log.Infof("[RequestLimitStrategy] [tracker %d] current idx reached limit, go to next idx", x.currentTrackerIdx)
+		Log.Infof("[tracker %d] current idx reached limit, go to next idx", x.currentTrackerIdx)
 		// current idx reached limit, go to next idx
 		x.currentTrackerIdx = x.currentTrackerIdx + 1
 		return x.getUsableProviderAccountIndex()

@@ -6,6 +6,8 @@ import (
 	ProviderAccountsStrategyTypes "github.com/ccau1/test-blockchain-client/provider_accounts_handler/provider_accounts_strategy"
 )
 
+var Log = utils.Log.WithField("class", "ProviderAccountsHandler")
+
 type ProviderAccount = provider_account.ProviderAccount
 type IProviderAccountsStrategy = ProviderAccountsStrategyTypes.IProviderAccountsStrategy
 
@@ -26,13 +28,14 @@ type ProviderAccountsHandler struct {
 }
 
 func (x *ProviderAccountsHandler) Load() (*ProviderAccountsHandler) {
-	if (x.UseStrategy == nil) {
-		x.UseStrategy = &DEFAULT_PROVIDER_ACCOUNTS_STRATEGY{}
-	}
 	// load chain account list into handler
 	x.LoadProviderAccountList()
 	// load strategy into handler
-	x.LoadChainStrategy(x.UseStrategy)
+	if (x.UseStrategy == nil) {
+		x.LoadChainStrategy(&DEFAULT_PROVIDER_ACCOUNTS_STRATEGY{})
+	} else {
+		x.LoadChainStrategy(x.UseStrategy)
+	}
 	// return self for chaining
 	return x
 }
@@ -47,8 +50,9 @@ func (x *ProviderAccountsHandler) LoadChainStrategy(strategy ProviderAccountsStr
 }
 
 func (x *ProviderAccountsHandler) LoadProviderAccountList() (*ProviderAccountsHandler) {
+	Log := Log.WithField("method", "LoadProviderAccountList")
 	// TODO: need to fetch from DB based on x.Provider
-	utils.Log.Infof("[Chain Account Handler] fetching DB for chain provider accounts with provider type: %s", x.Provider)
+	Log.Infof("fetching DB for chain provider accounts with provider type: %s", x.Provider)
 	// set list of chain accounts to providerAccounts
 	x.providerAccounts = &[]ProviderAccount {
 		ProviderAccount {

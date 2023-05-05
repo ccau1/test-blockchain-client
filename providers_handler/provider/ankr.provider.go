@@ -15,7 +15,9 @@ import (
 	ProviderAccountsStrategyTypes "github.com/ccau1/test-blockchain-client/provider_accounts_handler/provider_accounts_strategy"
 )
 
-type GetBlockNumberBody struct {
+var Log = utils.Log.WithField("class", "AnkrProvider")
+
+type AnkrGetBlockNumberBody struct {
 	JSONRPC    	string `json:"jsonrpc"`
 	Method 			string `json:"method"`
 	ID 					int `json:"id"`
@@ -62,7 +64,7 @@ func (x *AnkrProvider) SupportedChains() []string {
 
 func (x *AnkrProvider) GetLatestBlockNumber(chainType string) (string, error) {
 	// Encode the data
-	body := &GetBlockNumberBody{
+	body := &AnkrGetBlockNumberBody{
 		JSONRPC: "2.0",
 		Method: "eth_blockNumber",
 		ID: 1,
@@ -76,8 +78,9 @@ func (x *AnkrProvider) GetLatestBlockNumber(chainType string) (string, error) {
 }
 
 func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (ChainBlock, error) {
+	Log := Log.WithField("method", "GetByBlockNumber")
 	// Encode the data
-	body := &GetBlockNumberBody{
+	body := &AnkrGetBlockNumberBody{
 		JSONRPC: "2.0",
 		Method: "eth_getBlockByNumber",
 		ID: 1,
@@ -93,7 +96,7 @@ func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (C
 		return ChainBlock{}, err
 	}
 
-	utils.Log.Infof("[GetByBlockNumber] result: %+v", result)
+	Log.Infof("[GetByBlockNumber] result: %+v", result)
 
 	return result, err
 }
@@ -111,13 +114,14 @@ func generateUrl(chainType string) (string, error) {
 }
 
 func callAnkrProvider[Result any](chainType string, body []byte) (Result, error) {
+	Log := Log.WithField("method", "callAnkrProvider")
 	// call provider to retrieve info
 	providerDomain, err := generateUrl(chainType)
 	if err != nil {
 		return *new(Result), err
 	}
 
-	utils.Log.Infof("[callAnkrProvider] url: %s", providerDomain)
+	Log.Infof("url: %s", providerDomain)
 
 	res, err := http.Post(
 		providerDomain,					// url
@@ -132,20 +136,20 @@ func callAnkrProvider[Result any](chainType string, body []byte) (Result, error)
 	defer res.Body.Close()
 	resContent, err := ioutil.ReadAll(res.Body)
 
-	utils.Log.Infof("[callAnkrProvider] resContent raw: %+v", string(resContent))
+	Log.Infof("resContent raw: %+v", string(resContent))
 
 	var callResponse AnkrCallResponse[Result]
 	err = json.Unmarshal(resContent, &callResponse)
 
 	if err != nil {
-		utils.Log.Infof("[callAnkrProvider] err: %+v", err)
+		Log.Infof("err: %+v", err)
 		return *new(Result), err
 	}
 	
-	utils.Log.Infof("[callAnkrProvider] callResponse: %+v", callResponse)
+	Log.Infof("callResponse: %+v", callResponse)
 
 	if (callResponse.Error != nil) {
-		return *new(Result), errors.New(fmt.Sprintf("[callAnkrProvider] response error: [%d] %s", callResponse.Error.Code, callResponse.Error.Message))
+		return *new(Result), errors.New(fmt.Sprintf("response error: [%d] %s", callResponse.Error.Code, callResponse.Error.Message))
 	}
 
 	return callResponse.Result, nil

@@ -4,17 +4,25 @@ import (
 	"fmt"
 	"errors"
 	ProviderTypes "github.com/ccau1/test-blockchain-client/providers_handler/provider"
+	ProviderStrategies "github.com/ccau1/test-blockchain-client/providers_handler/provider_strategy"
 )
 
 type IProvider = ProviderTypes.IProvider
+type IProvidersStrategy = ProviderStrategies.IProvidersStrategy
 
 type GetNextProviderFilter struct {
+	ProviderStrategies.GetNextAccountOptions
 	ChainType string
 }
+
+type DEFAULT_PROVIDERS_STRATEGY = ProviderStrategies.FastLinkStrategy
 
 type ProvidersHandler struct {
 	providers *[]IProvider
 	loaded bool
+
+	providersStrategy ProviderStrategies.IProvidersStrategy
+	UseStrategy IProvidersStrategy
 }
 
 func (x *ProvidersHandler) Load() *ProvidersHandler {
@@ -26,18 +34,42 @@ func (x *ProvidersHandler) Load() *ProvidersHandler {
 		&ProviderTypes.AnkrProvider {
 			
 		},
-		&ProviderTypes.AnkrProvider {
+		&ProviderTypes.BlockDaemonProvider {
 			
 		},
+	}
+
+	if (x.UseStrategy == nil) {
+		x.LoadProviderStrategy(&DEFAULT_PROVIDERS_STRATEGY{})
+	} else {
+		x.LoadProviderStrategy(x.UseStrategy)
 	}
 
 	return x
 }
 
+func (x *ProvidersHandler) LoadProviderStrategy(strategy ProviderStrategies.IProvidersStrategy) (*ProvidersHandler) {
+	x.providersStrategy = strategy
+
+	return x
+}
+
+func (x *ProvidersHandler) filterKeyGenerator(filter GetNextProviderFilter) string {
+	key := ""
+
+	if (filter.ChainType != "") {
+		key = fmt.Sprintf("%s_%s", key, filter.ChainType)
+	}
+
+	return key
+}
+
 func (x *ProvidersHandler) GetNextProvider(filter GetNextProviderFilter) (*IProvider, error) {
 	// ensure handler is loaded
 	x.EnsureInitialLoad()
+
 	filteredProviders := *x.providers
+	// filter providers based on chain type
 	n := 0
 	if (filter.ChainType != "") {
 		n = 0
@@ -55,9 +87,15 @@ func (x *ProvidersHandler) GetNextProvider(filter GetNextProviderFilter) (*IProv
 		}
 	}
 
-	// TODO: implement strategies to determine which provider to return here
-	// determine how to get the next provider to use
-	return &(filteredProviders)[0], nil
+	provider, err := x.providersStrategy.GetNextProvider(filteredProviders, &ProviderStrategies.GetNextAccountOptions{
+		Key: x.filterKeyGenerator(filter),
+	})
+
+	if (err != nil) {
+		return nil, errors.New(fmt.Sprintf("[GetNextProvider] GetNextProvider error: %+v", err))
+	}
+
+	return provider, nil
 }
 
 func (x *ProvidersHandler) EnsureInitialLoad() {
