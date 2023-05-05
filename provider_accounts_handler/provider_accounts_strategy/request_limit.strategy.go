@@ -7,7 +7,7 @@ import (
 	"github.com/ccau1/test-blockchain-client/utils"
 )
 
-var Log = utils.Log.WithField("class", "RequestLimitStrategy")
+var Log = utils.Log
 
 type RequestTrackerItem struct {
 	// request count
@@ -43,7 +43,6 @@ func (x *RequestLimitStrategy) Load(newProviderAccountsList *[]ProviderAccount) 
 }
 
 func (x *RequestLimitStrategy) GetNextAccount() (*ProviderAccount, error) {
-	Log := Log.WithField("method", "GetNextAccount")
 	// if chain list not available, throw error
 	if (x.providerAccounts == nil || len(*x.providerAccounts) == 0) {
 		return nil, errors.New("chain account list not loaded")
@@ -58,7 +57,6 @@ func (x *RequestLimitStrategy) GetNextAccount() (*ProviderAccount, error) {
 }
 
 func (x *RequestLimitStrategy) getUsableProviderAccountIndex() int {
-	Log := Log.WithField("method", "getUsableProviderAccountIndex")
 	// if req tracker list doesn't have this index, instantiate now
 	if ((*x.reqTrackerList)[x.currentTrackerIdx] == nil) {
 		(*x.reqTrackerList)[x.currentTrackerIdx] = &RequestTrackerItem{

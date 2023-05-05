@@ -15,7 +15,7 @@ import (
 	ProviderAccountsStrategyTypes "github.com/ccau1/test-blockchain-client/provider_accounts_handler/provider_accounts_strategy"
 )
 
-var Log = utils.Log.WithField("class", "AnkrProvider")
+var Log = utils.Log
 
 type AnkrGetBlockNumberBody struct {
 	JSONRPC    	string `json:"jsonrpc"`
@@ -78,7 +78,6 @@ func (x *AnkrProvider) GetLatestBlockNumber(chainType string) (string, error) {
 }
 
 func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (ChainBlock, error) {
-	Log := Log.WithField("method", "GetByBlockNumber")
 	// Encode the data
 	body := &AnkrGetBlockNumberBody{
 		JSONRPC: "2.0",
@@ -114,7 +113,6 @@ func generateUrl(chainType string) (string, error) {
 }
 
 func callAnkrProvider[Result any](chainType string, body []byte) (Result, error) {
-	Log := Log.WithField("method", "callAnkrProvider")
 	// call provider to retrieve info
 	providerDomain, err := generateUrl(chainType)
 	if err != nil {
