@@ -54,8 +54,8 @@ func (x *ProviderAccountsHandler) loadProviderAccountsStrategy(strategy Provider
 	load provider account list to run strategy against
 */
 func (x *ProviderAccountsHandler) loadProviderAccountList() (*ProviderAccountsHandler) {
-	// TODO: need to fetch from DB based on x.Provider
 	Log.Infof("fetching DB for chain provider accounts with provider type: %s", x.Provider)
+	// TODO: need to fetch from DB based on x.Provider
 	// set list of chain accounts to providerAccounts
 	x.providerAccounts = &[]ProviderAccount {
 		ProviderAccount {

@@ -58,6 +58,8 @@ gomon .
 
 ## API Calls
 
+[docgen documentation](/docs/docgen.md)
+
 ### Block Number
 fetch latest block number
 
@@ -96,6 +98,7 @@ fetch block number by number
 ## Production Ready Requirement
 
 - add unit tests
+- use cache and DB for strategies & handlers
 - github actions:
   - run test (`go test ./...`) and promote to staging (in this scenario there's dev and staging)
   - cache installed steps
@@ -114,18 +117,20 @@ fetch block number by number
 
 [x] use validator
 
-[ ] test cases
-
 [x] set terraform for deployment to ecs fargate, write HCL
 
 [x] set terraform for different env
 
 [x] use multiple accounts under a rpc endpoint
 
+[x] add a proxy (separate service for each chain type, single entry point for wallet side to communicate with all chain types)
+
+[ ] test cases
+
+[ ] add usage of cache & db to sync between different instances of this service
+
 [ ] handle rotating providers based on endpoints returned errors
 
 [ ] handle rotating providers based on speed
-
-[x] add a proxy (separate service for each chain type, single entry point for wallet side to communicate with all chain types)
 
 [ ] handle provider request result error
