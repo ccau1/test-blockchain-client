@@ -6,6 +6,9 @@ import (
 
 type DEFAULT_PROVIDER_ACCOUNTS_STRATEGY = ProviderAccountsStrategyTypes.LoopStrategy
 
+/*
+	Central control for managing a list of accounts for providers
+*/
 type ProviderAccountsHandler struct {
 	// whether initial load has been ran
 	loaded bool
@@ -19,6 +22,9 @@ type ProviderAccountsHandler struct {
 	UseStrategy IProviderAccountsStrategy
 }
 
+/*
+	initialize provider accounts handler
+*/
 func (x *ProviderAccountsHandler) Load() (*ProviderAccountsHandler) {
 	// load chain account list into handler
 	x.LoadProviderAccountList()
@@ -32,6 +38,9 @@ func (x *ProviderAccountsHandler) Load() (*ProviderAccountsHandler) {
 	return x
 }
 
+/*
+	load provider accounts strategy for handling next account selection
+*/
 func (x *ProviderAccountsHandler) LoadProviderAccountsStrategy(strategy ProviderAccountsStrategyTypes.IProviderAccountsStrategy) (*ProviderAccountsHandler) {
 	// load strategy with chain list
 	strategy.Load(x.providerAccounts)
@@ -41,6 +50,9 @@ func (x *ProviderAccountsHandler) LoadProviderAccountsStrategy(strategy Provider
 	return x
 }
 
+/*
+	load provider account list to run strategy against
+*/
 func (x *ProviderAccountsHandler) LoadProviderAccountList() (*ProviderAccountsHandler) {
 	// TODO: need to fetch from DB based on x.Provider
 	Log.Infof("fetching DB for chain provider accounts with provider type: %s", x.Provider)
@@ -93,6 +105,9 @@ func (x *ProviderAccountsHandler) LoadProviderAccountList() (*ProviderAccountsHa
 	return x
 }
 
+/*
+	get an account from the list of accounts based on strategy
+*/
 func (x *ProviderAccountsHandler) GetNextAccount(filter *GetNextAccountFilter) (*ProviderAccount, error) {
 	// ensure handler is loaded
 	x.EnsureInitialLoad()
@@ -100,6 +115,9 @@ func (x *ProviderAccountsHandler) GetNextAccount(filter *GetNextAccountFilter) (
 	return (*x.providerAccountsStrategy).GetNextAccount()
 }
 
+/*
+	if not initialized, load now. Otherwise, skip
+*/
 func (x *ProviderAccountsHandler) EnsureInitialLoad() {
 	if (!x.loaded) {
 		// handler is not loaded yet, load first

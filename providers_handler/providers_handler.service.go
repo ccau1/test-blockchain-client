@@ -18,7 +18,11 @@ type ProvidersHandler struct {
 	UseStrategy IProvidersStrategy
 }
 
+/*
+	providers handler initialization
+*/
 func (x *ProvidersHandler) Load() *ProvidersHandler {
+	// define list of providers
 	x.providers = &[]IProvider {
 		&ankr_provider.AnkrProvider {
 			
@@ -30,24 +34,32 @@ func (x *ProvidersHandler) Load() *ProvidersHandler {
 			
 		},
 	}
-
+	// load provider strategy by either passed in UseStrategy
+	// or the default strategy
 	if (x.UseStrategy == nil) {
 		x.LoadProviderStrategy(&DEFAULT_PROVIDERS_STRATEGY{})
 	} else {
 		x.LoadProviderStrategy(x.UseStrategy)
 	}
-
+	// return self for chaining
 	return x
 }
 
+/*
+	store and run initialization of the strategy
+*/
 func (x *ProvidersHandler) LoadProviderStrategy(strategy ProviderStrategies.IProvidersStrategy) (*ProvidersHandler) {
+	// store strategy into provider instance
 	x.providersStrategy = strategy
-
+	// run strategy's load
 	x.providersStrategy.Load()
-
+	// return self for chaining
 	return x
 }
 
+/*
+	define a unique key based on the values of filter
+*/
 func (x *ProvidersHandler) filterKeyGenerator(filter GetNextProviderFilter) string {
 	key := ""
 
@@ -58,6 +70,10 @@ func (x *ProvidersHandler) filterKeyGenerator(filter GetNextProviderFilter) stri
 	return key
 }
 
+/*
+	get a provider based on the outcome of the strategy and
+	param filters
+*/
 func (x *ProvidersHandler) GetNextProvider(filter GetNextProviderFilter) (*IProvider, error) {
 	// ensure handler is loaded
 	x.EnsureInitialLoad()
@@ -79,18 +95,20 @@ func (x *ProvidersHandler) GetNextProvider(filter GetNextProviderFilter) (*IProv
 			return nil, errors.New(fmt.Sprintf("no provider available for chain type [%s]", filter.ChainType))
 		}
 	}
-
+	// get provider from list of providers based on the strategy
 	provider, err := x.providersStrategy.GetNextProvider(filteredProviders, &ProviderStrategies.GetNextAccountOptions{
 		Key: x.filterKeyGenerator(filter),
 	})
-
 	if (err != nil) {
 		return nil, errors.New(fmt.Sprintf("[GetNextProvider] GetNextProvider error: %+v", err))
 	}
-
+	// return selected provider
 	return provider, nil
 }
 
+/*
+	if not ran initial load, run. Otherwise, skip it
+*/
 func (x *ProvidersHandler) EnsureInitialLoad() {
 	if (!x.loaded) {
 		// handler is not loaded yet, load first

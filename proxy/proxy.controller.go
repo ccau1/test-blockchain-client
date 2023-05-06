@@ -58,6 +58,7 @@ func c_getBlockByNumber(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// transform ChainBlock to []byte
 	resultBytes, err := json.Marshal(result)
 	if err != nil {
 		render.Render(rw, r, utils.ErrServerError("PolygonRPC request result error: " + err.Error()))

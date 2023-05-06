@@ -24,6 +24,9 @@ type FastLinkStrategy struct {
 	responseTimeTicker *time.Ticker
 }
 
+/*
+	get a provider from a list of providers
+*/
 func (x *FastLinkStrategy) GetNextProvider(providers []IProvider, options *GetNextAccountOptions) (*IProvider, error) {
 	Log.Infof("start selecting provider: %s\n", reflect.TypeOf(providers[0]))
 
@@ -39,6 +42,9 @@ func (x *FastLinkStrategy) GetNextProvider(providers []IProvider, options *GetNe
 	return &providers[0], nil
 }
 
+/*
+	initialize strategy
+*/
 func (x *FastLinkStrategy) Load() {
 	// instantiate map
 	x.providersResponseTime = make(map[string]*ResponseTimeItem)
@@ -46,6 +52,9 @@ func (x *FastLinkStrategy) Load() {
 	go x.LoadIntervalSpeedTest(CHECK_RESPONSE_TIME_INTERVAL)
 }
 
+/*
+	start running speed test job continuously at an interval
+*/
 func (x *FastLinkStrategy) LoadIntervalSpeedTest(intervalMS int64) {
 	// if ticker already exists, stop previous ticker
 	if (x.responseTimeTicker != nil) {
@@ -58,6 +67,9 @@ func (x *FastLinkStrategy) LoadIntervalSpeedTest(intervalMS int64) {
 	x.responseTimeTicker = helper.SetInterval(intervalMS, x.intervalSpeedTestJob)
 }
 
+/*
+	add param providers into providersResponseTime if not already in there
+*/
 func (x *FastLinkStrategy) addProvidersToScheduledSpeedTest(providers []IProvider) {
 	for _, provider := range providers {
 		providerName := reflect.TypeOf(provider).String()
@@ -71,6 +83,10 @@ func (x *FastLinkStrategy) addProvidersToScheduledSpeedTest(providers []IProvide
 	}
 }
 
+/*
+	on each interval job, go through each provider and ping them to
+	get a health check and store its response time
+*/
 func (x *FastLinkStrategy) intervalSpeedTestJob() {
 	if (time.Now().UnixMilli() - x.lastCheckedResponseTime < CHECK_RESPONSE_TIME_INTERVAL) {
 		// not passed check time interval yet, skip

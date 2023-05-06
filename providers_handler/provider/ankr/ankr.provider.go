@@ -37,12 +37,18 @@ func (x *AnkrProvider) SupportedChains() []string {
 	}
 }
 
+/*
+	health check ping method. Returns error if ping doesn't pass
+*/
 func (x *AnkrProvider) Ping() error {
 	_, err := x.GetLatestBlockNumber("eth")
 
 	return err
 }
 
+/*
+	get chain type's latest block number
+*/
 func (x *AnkrProvider) GetLatestBlockNumber(chainType string) (string, error) {
 	// Encode the data
 	body := &AnkrGetBlockNumberBody{
@@ -58,6 +64,9 @@ func (x *AnkrProvider) GetLatestBlockNumber(chainType string) (string, error) {
 	return fmt.Sprint(intNum), err
 }
 
+/*
+	get chain type's block by block number
+*/
 func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (ChainBlock, error) {
 	// Encode the data
 	body := &AnkrGetBlockNumberBody{

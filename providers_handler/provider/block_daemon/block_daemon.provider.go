@@ -43,12 +43,17 @@ func (x *BlockDaemonProvider) SupportedChains() []string {
 	}
 }
 
+/*
+	health check ping method. Returns error if ping doesn't pass
+*/
 func (x *BlockDaemonProvider) Ping() error {
 	_, err := x.GetLatestBlockNumber("eth")
-
 	return err
 }
 
+/*
+	get chain type's latest block number
+*/
 func (x *BlockDaemonProvider) GetLatestBlockNumber(chainType string) (string, error) {
 	result, err := callBlockDaemon[int](chainType, "sync/block_number")
 
@@ -61,6 +66,9 @@ func (x *BlockDaemonProvider) GetLatestBlockNumber(chainType string) (string, er
 	return fmt.Sprint(result), nil
 }
 
+/*
+	get chain type's block by block number
+*/
 func (x *BlockDaemonProvider) GetByBlockNumber(chainType string, blockNumber string) (ChainBlock, error) {
 	result, err := callBlockDaemon[BlockDaemonBlock](chainType, "block/" + blockNumber)
 
@@ -88,45 +96,42 @@ func callBlockDaemon[Result any](chainType string, method string) (Result, error
 		return *new(Result), err
 	}
 	Log.Infof("selected chainAccount: %+v", chainAccount)
-
+	// map the service's standardized chain name to this provider's name
 	if (chainAliasMap[chainType] != "") {
 		chainType = chainAliasMap[chainType]
 	}
-
+	// format url from chainType, network and method
 	url := fmt.Sprintf("https://svc.blockdaemon.com/universal/v1/%s/%s/%s", chainType, DEFAULT_NETWORK, method)
 
 	Log.Infof("url: %s", url)
-
+	// create request object from url
 	req, err := http.NewRequest("GET", url, nil)
-
 	if (err != nil) {
 		return *new(Result), err
 	}
-
+	//		add headers to request
 	req.Header.Add("accept", "application/json")
 	req.Header.Add("X-API-Key", chainAccount.ID)
-
+	// run request to get a response
 	res, err := http.DefaultClient.Do(req)
-
 	if (err != nil) {
 		return *new(Result), err
 	}
-
 	defer res.Body.Close()
+	// read body to []byte
 	resContent, err := ioutil.ReadAll(res.Body)
-
 	if (err != nil) {
 		return *new(Result), err
 	}
 
 	// Log.Infof("resContent: %+v\n", string(resContent))
 
+	// convert []byte to expected result type
 	var callResponse Result
 	err = json.Unmarshal(resContent, &callResponse)
-
 	if (err != nil) {
 		return *new(Result), err
 	}
-
-	return callResponse, err
+	// return result
+	return callResponse, nil
 }
