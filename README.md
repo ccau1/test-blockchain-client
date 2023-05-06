@@ -127,3 +127,5 @@ fetch block number by number
 [ ] handle rotating providers based on speed
 
 [x] add a proxy (separate service for each chain type, single entry point for wallet side to communicate with all chain types)
+
+[ ] handle provider request result error

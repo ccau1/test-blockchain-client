@@ -1,5 +1,11 @@
 package provider
 
+import (
+	"github.com/ccau1/test-blockchain-client/provider_accounts_handler"
+)
+
+type ProviderAccountsHandler = provider_accounts_handler.ProviderAccountsHandler
+
 type ChainBlockTransaction struct {
 	BlockHash string `json:"blockHash"`
 	BlockNumber string `json:"blockNumber"`

@@ -36,9 +36,7 @@ type AnkrCallResponseError struct {
 	Message			string `json:"message"`
 }
 
-type ProviderAccountsHandler = provider_accounts_handler.ProviderAccountsHandler
-
-var providerAccountsHandler *ProviderAccountsHandler = &ProviderAccountsHandler{
+var ankrProviderAccountsHandler *ProviderAccountsHandler = &ProviderAccountsHandler{
 	// chain accounts handler will fetch accounts based on provider name
 	Provider: "ankr",
 	// the strategy to use for deciding which account to use for the 
@@ -102,7 +100,9 @@ func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (C
 
 func generateUrl(chainType string) (string, error) {
 	// get chain account to use
-	chainAccount, err := providerAccountsHandler.GetNextAccount()
+	chainAccount, err := ankrProviderAccountsHandler.GetNextAccount(&provider_accounts_handler.GetNextAccountFilter{
+
+	})
 	if (err != nil) {
 		return "", err
 	}
