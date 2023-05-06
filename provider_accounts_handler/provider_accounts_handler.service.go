@@ -4,6 +4,8 @@ import (
 	ProviderAccountsStrategyTypes "github.com/ccau1/test-blockchain-client/provider_accounts_handler/provider_accounts_strategy"
 )
 
+type DEFAULT_PROVIDER_ACCOUNTS_STRATEGY = ProviderAccountsStrategyTypes.LoopStrategy
+
 type ProviderAccountsHandler struct {
 	// whether initial load has been ran
 	loaded bool
@@ -22,15 +24,15 @@ func (x *ProviderAccountsHandler) Load() (*ProviderAccountsHandler) {
 	x.LoadProviderAccountList()
 	// load strategy into handler
 	if (x.UseStrategy == nil) {
-		x.LoadChainStrategy(&DEFAULT_PROVIDER_ACCOUNTS_STRATEGY{})
+		x.LoadProviderAccountsStrategy(&DEFAULT_PROVIDER_ACCOUNTS_STRATEGY{})
 	} else {
-		x.LoadChainStrategy(x.UseStrategy)
+		x.LoadProviderAccountsStrategy(x.UseStrategy)
 	}
 	// return self for chaining
 	return x
 }
 
-func (x *ProviderAccountsHandler) LoadChainStrategy(strategy ProviderAccountsStrategyTypes.IProviderAccountsStrategy) (*ProviderAccountsHandler) {
+func (x *ProviderAccountsHandler) LoadProviderAccountsStrategy(strategy ProviderAccountsStrategyTypes.IProviderAccountsStrategy) (*ProviderAccountsHandler) {
 	// load strategy with chain list
 	strategy.Load(x.providerAccounts)
 	// store strategy in handler

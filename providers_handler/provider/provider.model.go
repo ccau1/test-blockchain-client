@@ -51,6 +51,8 @@ type ChainBlock struct {
 type IProvider interface {
 	// define a list of chains this provider supports
 	SupportedChains() []string
+	// simple ping function to test connection
+	Ping() error
 	// chain action methods for fetching/updating which every provider should provide
 	GetLatestBlockNumber(chainType string) (string, error)
 	GetByBlockNumber(chainType string, blockNumber string) (ChainBlock, error)

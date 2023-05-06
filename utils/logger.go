@@ -1,11 +1,12 @@
 package utils
 
 import (
-	"strings"
-	"os"
 	"fmt"
+	"os"
 	"path"
 	"runtime"
+	"strings"
+
 	"github.com/sirupsen/logrus"
 )
 
@@ -19,7 +20,8 @@ func InitLogger() {
 	Log.Formatter = &logrus.TextFormatter{
 		CallerPrettyfier: func(f *runtime.Frame) (string, string) {
 			filename := path.Base(f.File)
-			function := path.Base(f.Function)[strings.LastIndex(path.Base(f.Function), ".") + 1:]
+			fullFunction := path.Base(f.Function)
+			function := fullFunction[strings.Index(fullFunction, ".") + 1:]
 			return fmt.Sprintf("%s() \033[0;31m::\033[0m", function), fmt.Sprintf("%s:%d", filename, f.Line)
 		},
 	}

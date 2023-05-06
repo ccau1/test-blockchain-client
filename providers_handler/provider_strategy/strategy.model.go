@@ -11,5 +11,6 @@ type GetNextAccountOptions struct {
 type IProvider = provider.IProvider
 
 type IProvidersStrategy interface {
+	Load()
 	GetNextProvider(providers []IProvider, options *GetNextAccountOptions) (*IProvider, error)
 }

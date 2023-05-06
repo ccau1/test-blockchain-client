@@ -1,13 +1,14 @@
 package proxy
 
 import (
-	"net/http"
 	"encoding/json"
-	"github.com/go-chi/render"
-	"github.com/go-chi/chi/v5"
+	"net/http"
 
-	"github.com/ccau1/test-blockchain-client/utils"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/render"
+
 	"github.com/ccau1/test-blockchain-client/providers_handler"
+	"github.com/ccau1/test-blockchain-client/utils"
 )
 
 type GetNextProviderFilter = providers_handler.GetNextProviderFilter

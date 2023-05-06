@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	ProviderTypes "github.com/ccau1/test-blockchain-client/providers_handler/provider"
+	ankr_provider "github.com/ccau1/test-blockchain-client/providers_handler/provider/ankr"
+	block_daemon_provider "github.com/ccau1/test-blockchain-client/providers_handler/provider/block_daemon"
 	ProviderStrategies "github.com/ccau1/test-blockchain-client/providers_handler/provider_strategy"
+	"golang.org/x/exp/slices"
 )
 
 type ProvidersHandler struct {
@@ -18,13 +20,13 @@ type ProvidersHandler struct {
 
 func (x *ProvidersHandler) Load() *ProvidersHandler {
 	x.providers = &[]IProvider {
-		&ProviderTypes.AnkrProvider {
+		&ankr_provider.AnkrProvider {
 			
 		},
-		&ProviderTypes.AnkrProvider {
+		&ankr_provider.AnkrProvider {
 			
 		},
-		&ProviderTypes.BlockDaemonProvider {
+		&block_daemon_provider.BlockDaemonProvider {
 			
 		},
 	}
@@ -40,6 +42,8 @@ func (x *ProvidersHandler) Load() *ProvidersHandler {
 
 func (x *ProvidersHandler) LoadProviderStrategy(strategy ProviderStrategies.IProvidersStrategy) (*ProvidersHandler) {
 	x.providersStrategy = strategy
+
+	x.providersStrategy.Load()
 
 	return x
 }
@@ -63,7 +67,7 @@ func (x *ProvidersHandler) GetNextProvider(filter GetNextProviderFilter) (*IProv
 	if (filter.ChainType != "") {
 		n := 0
     for _, val := range filteredProviders {
-        if contains(val.SupportedChains(), filter.ChainType) {
+        if slices.Contains(val.SupportedChains(), filter.ChainType) {
 					filteredProviders[n] = val
             n++
         }
@@ -93,14 +97,4 @@ func (x *ProvidersHandler) EnsureInitialLoad() {
 		x.Load()
 		x.loaded = true
 	}
-}
-
-func contains(s []string, str string) bool {
-	for _, v := range s {
-		if v == str {
-			return true
-		}
-	}
-
-	return false
 }

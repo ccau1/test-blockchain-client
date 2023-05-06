@@ -27,13 +27,13 @@ We want a proxy where different wallet chains can go through this service to tri
 
 There are two main layers: Providers and ProviderAccounts
 
-Providers holds a list of different Providers, all of which defines the same methods (ie. GetBlockNumber, GetBlockByNumber). Each provider define how to communicate with its corresponding provider endpoint.
+**Providers** holds a list of different Providers, all of which defines the same methods (ie. GetBlockNumber, GetBlockByNumber). Each provider define how to communicate with its corresponding provider endpoint.
 
-ProviderAccounts holds a list of provider's accounts. This way, we can use multiple accounts per provider, based on our needs (ie. rotate between them on reaching quota limit).
+**ProviderAccounts** holds a list of provider's accounts. This way, we can use multiple accounts per provider, based on our needs (ie. rotate between them on reaching quota limit).
 
 Both Providers and ProviderAccounts can have a layer of strategy that defines how to select which Provider/ProviderAccount to use.
 
-A proxy helps centralize all chain route methods
+A **proxy** helps centralize all chain route methods
 
 ## Setup
 
@@ -63,7 +63,7 @@ fetch latest block number
 
 #### Params
 
-`chainType` - code for a chain type (ie. eth, bsc)
+`chainType` - code for a chain type (ie. eth, bsc, btc)
 
 ```
 [GET] localhost:3000/{chainType}/block-number
@@ -73,7 +73,7 @@ fetch latest block number
 fetch block number by number
 
 #### Params
-`chainType` - code for a chain type (ie. eth, bsc)
+`chainType` - code for a chain type (ie. eth, bsc, btc)
 
 `blockNumber` - block number to fetch
 

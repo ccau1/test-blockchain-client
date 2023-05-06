@@ -1,42 +1,19 @@
-package provider
+package ankr
 
 import (
-	"fmt"
 	"bytes"
-	"errors"
-	"strings"
-	"strconv"
-	"net/http"
-	"io/ioutil"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 
-	"github.com/ccau1/test-blockchain-client/utils"
 	"github.com/ccau1/test-blockchain-client/provider_accounts_handler"
 	ProviderAccountsStrategyTypes "github.com/ccau1/test-blockchain-client/provider_accounts_handler/provider_accounts_strategy"
+	"github.com/ccau1/test-blockchain-client/utils/helper"
 )
 
-var Log = utils.Log
-
-type AnkrGetBlockNumberBody struct {
-	JSONRPC    	string `json:"jsonrpc"`
-	Method 			string `json:"method"`
-	ID 					int `json:"id"`
-	Params			[]interface{} `json:"params"`
-}
-
-type AnkrCallResponse[T any] struct {
-	JSONRPC    	string `json:"jsonrpc"`
-	ID 					int `json:"id"`
-	Result    	T `json:"result"`
-	Error				*AnkrCallResponseError `json:"error"`
-}
-
-type AnkrCallResponseError struct {
-	Code				int `json:"code"`
-	Message			string `json:"message"`
-}
-
-var ankrProviderAccountsHandler *ProviderAccountsHandler = &ProviderAccountsHandler{
+var providerAccountsHandler *ProviderAccountsHandler = &ProviderAccountsHandler{
 	// chain accounts handler will fetch accounts based on provider name
 	Provider: "ankr",
 	// the strategy to use for deciding which account to use for the 
@@ -60,6 +37,12 @@ func (x *AnkrProvider) SupportedChains() []string {
 	}
 }
 
+func (x *AnkrProvider) Ping() error {
+	_, err := x.GetLatestBlockNumber("eth")
+
+	return err
+}
+
 func (x *AnkrProvider) GetLatestBlockNumber(chainType string) (string, error) {
 	// Encode the data
 	body := &AnkrGetBlockNumberBody{
@@ -70,7 +53,7 @@ func (x *AnkrProvider) GetLatestBlockNumber(chainType string) (string, error) {
 	requestBodyByte, _ := json.Marshal(body)
 	result, err := callAnkrProvider[string](chainType, requestBodyByte)
 
-	intNum, err := strconv.ParseInt(strings.ReplaceAll(result, "0x", ""), 16, 64)
+	intNum, err := helper.HexToInt(result)
 
 	return fmt.Sprint(intNum), err
 }
@@ -93,14 +76,14 @@ func (x *AnkrProvider) GetByBlockNumber(chainType string, blockNumber string) (C
 		return ChainBlock{}, err
 	}
 
-	Log.Infof("[GetByBlockNumber] result: %+v", result)
+	// Log.Infof("[GetByBlockNumber] result: %+v", result)
 
 	return result, err
 }
 
 func generateUrl(chainType string) (string, error) {
 	// get chain account to use
-	chainAccount, err := ankrProviderAccountsHandler.GetNextAccount(&provider_accounts_handler.GetNextAccountFilter{
+	chainAccount, err := providerAccountsHandler.GetNextAccount(&provider_accounts_handler.GetNextAccountFilter{
 
 	})
 	if (err != nil) {
@@ -134,7 +117,7 @@ func callAnkrProvider[Result any](chainType string, body []byte) (Result, error)
 	defer res.Body.Close()
 	resContent, err := ioutil.ReadAll(res.Body)
 
-	Log.Infof("resContent raw: %+v", string(resContent))
+	// Log.Infof("resContent raw: %+v", string(resContent))
 
 	var callResponse AnkrCallResponse[Result]
 	err = json.Unmarshal(resContent, &callResponse)
@@ -144,7 +127,7 @@ func callAnkrProvider[Result any](chainType string, body []byte) (Result, error)
 		return *new(Result), err
 	}
 	
-	Log.Infof("callResponse: %+v", callResponse)
+	// Log.Infof("callResponse: %+v", callResponse)
 
 	if (callResponse.Error != nil) {
 		return *new(Result), errors.New(fmt.Sprintf("response error: [%d] %s", callResponse.Error.Code, callResponse.Error.Message))
