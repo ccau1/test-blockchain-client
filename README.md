@@ -23,7 +23,7 @@ We want a proxy where different wallet chains can go through this service to tri
 
 ### Solution
 
-![Proxy Diagram](/proxy-diagram.png)
+![Proxy Diagram](/proxy-diagram-detailed.png)
 
 There are two main layers: Providers and ProviderAccounts
 

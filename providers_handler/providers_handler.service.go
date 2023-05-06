@@ -37,9 +37,9 @@ func (x *ProvidersHandler) Load() *ProvidersHandler {
 	// load provider strategy by either passed in UseStrategy
 	// or the default strategy
 	if (x.UseStrategy == nil) {
-		x.LoadProviderStrategy(&DEFAULT_PROVIDERS_STRATEGY{})
+		x.loadProviderStrategy(&DEFAULT_PROVIDERS_STRATEGY{})
 	} else {
-		x.LoadProviderStrategy(x.UseStrategy)
+		x.loadProviderStrategy(x.UseStrategy)
 	}
 	// return self for chaining
 	return x
@@ -48,7 +48,7 @@ func (x *ProvidersHandler) Load() *ProvidersHandler {
 /*
 	store and run initialization of the strategy
 */
-func (x *ProvidersHandler) LoadProviderStrategy(strategy ProviderStrategies.IProvidersStrategy) (*ProvidersHandler) {
+func (x *ProvidersHandler) loadProviderStrategy(strategy ProviderStrategies.IProvidersStrategy) (*ProvidersHandler) {
 	// store strategy into provider instance
 	x.providersStrategy = strategy
 	// run strategy's load
@@ -76,7 +76,7 @@ func (x *ProvidersHandler) filterKeyGenerator(filter GetNextProviderFilter) stri
 */
 func (x *ProvidersHandler) GetNextProvider(filter GetNextProviderFilter) (*IProvider, error) {
 	// ensure handler is loaded
-	x.EnsureInitialLoad()
+	x.ensureInitialLoad()
 
 	filteredProviders := *x.providers
 	// filter providers based on chain type
@@ -109,7 +109,7 @@ func (x *ProvidersHandler) GetNextProvider(filter GetNextProviderFilter) (*IProv
 /*
 	if not ran initial load, run. Otherwise, skip it
 */
-func (x *ProvidersHandler) EnsureInitialLoad() {
+func (x *ProvidersHandler) ensureInitialLoad() {
 	if (!x.loaded) {
 		// handler is not loaded yet, load first
 		x.Load()

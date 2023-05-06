@@ -27,12 +27,12 @@ type ProviderAccountsHandler struct {
 */
 func (x *ProviderAccountsHandler) Load() (*ProviderAccountsHandler) {
 	// load chain account list into handler
-	x.LoadProviderAccountList()
+	x.loadProviderAccountList()
 	// load strategy into handler
 	if (x.UseStrategy == nil) {
-		x.LoadProviderAccountsStrategy(&DEFAULT_PROVIDER_ACCOUNTS_STRATEGY{})
+		x.loadProviderAccountsStrategy(&DEFAULT_PROVIDER_ACCOUNTS_STRATEGY{})
 	} else {
-		x.LoadProviderAccountsStrategy(x.UseStrategy)
+		x.loadProviderAccountsStrategy(x.UseStrategy)
 	}
 	// return self for chaining
 	return x
@@ -41,7 +41,7 @@ func (x *ProviderAccountsHandler) Load() (*ProviderAccountsHandler) {
 /*
 	load provider accounts strategy for handling next account selection
 */
-func (x *ProviderAccountsHandler) LoadProviderAccountsStrategy(strategy ProviderAccountsStrategyTypes.IProviderAccountsStrategy) (*ProviderAccountsHandler) {
+func (x *ProviderAccountsHandler) loadProviderAccountsStrategy(strategy ProviderAccountsStrategyTypes.IProviderAccountsStrategy) (*ProviderAccountsHandler) {
 	// load strategy with chain list
 	strategy.Load(x.providerAccounts)
 	// store strategy in handler
@@ -53,7 +53,7 @@ func (x *ProviderAccountsHandler) LoadProviderAccountsStrategy(strategy Provider
 /*
 	load provider account list to run strategy against
 */
-func (x *ProviderAccountsHandler) LoadProviderAccountList() (*ProviderAccountsHandler) {
+func (x *ProviderAccountsHandler) loadProviderAccountList() (*ProviderAccountsHandler) {
 	// TODO: need to fetch from DB based on x.Provider
 	Log.Infof("fetching DB for chain provider accounts with provider type: %s", x.Provider)
 	// set list of chain accounts to providerAccounts
@@ -110,7 +110,7 @@ func (x *ProviderAccountsHandler) LoadProviderAccountList() (*ProviderAccountsHa
 */
 func (x *ProviderAccountsHandler) GetNextAccount(filter *GetNextAccountFilter) (*ProviderAccount, error) {
 	// ensure handler is loaded
-	x.EnsureInitialLoad()
+	x.ensureInitialLoad()
 	// determine how to get the next chain account to use
 	return (*x.providerAccountsStrategy).GetNextAccount()
 }
@@ -118,7 +118,7 @@ func (x *ProviderAccountsHandler) GetNextAccount(filter *GetNextAccountFilter) (
 /*
 	if not initialized, load now. Otherwise, skip
 */
-func (x *ProviderAccountsHandler) EnsureInitialLoad() {
+func (x *ProviderAccountsHandler) ensureInitialLoad() {
 	if (!x.loaded) {
 		// handler is not loaded yet, load first
 		x.Load()
