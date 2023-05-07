@@ -189,7 +189,7 @@ resource "aws_ecs_task_definition" "bc_client_api" {
             "/wget",
             "--quiet",
             "--output-document=-",
-            "http://localhost:3000/health"
+            "http://127.0.0.1:3000/health"
           ],
           "timeout": 5,
           "interval": 30,
