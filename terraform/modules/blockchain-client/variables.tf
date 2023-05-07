@@ -31,11 +31,13 @@ variable "launch_type" {
     cpu    = number
     memory = number
     container_port = number
+    lb_port = number
   })
   default = {
     type   = "FARGATE"
     cpu    = 1024
     memory = 2048
     container_port = 3000
+    lb_port = 80
   }
 }

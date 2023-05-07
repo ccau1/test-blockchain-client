@@ -242,8 +242,8 @@ resource "aws_security_group" "lb" {
 
   ingress {
     protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
+    from_port   = var.launch_type.lb_port
+    to_port     = var.launch_type.lb_port
     cidr_blocks = ["0.0.0.0/0"]
   }
 

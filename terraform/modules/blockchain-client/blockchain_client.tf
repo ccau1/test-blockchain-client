@@ -63,6 +63,16 @@ resource "aws_lb_target_group" "bc_client_api" {
     create_before_destroy = true
   }
 
+  health_check {
+    path = "/health"
+    port = 3000
+    healthy_threshold = 6
+    unhealthy_threshold = 2
+    timeout = 2
+    interval = 30
+    matcher = "200"  # has to be HTTP 200 or fails
+  }
+
   tags = {
     "Name" = "${var.env}-bc-client-api-tg"
   }
@@ -89,7 +99,7 @@ resource "aws_security_group" "bc_client_api_task" {
 
 resource "aws_lb_listener" "bc_client_api" {
   load_balancer_arn = aws_lb.default.id
-  port              = var.launch_type.container_port
+  port              = var.launch_type.lb_port
   protocol          = "HTTP"
 
   default_action {
@@ -172,6 +182,13 @@ resource "aws_ecs_task_definition" "bc_client_api" {
             "awslogs-create-group": "true",
             "awslogs-stream-prefix": "${var.env}-bc-client-api"
           }
+        },
+        "healthCheck": {
+          "retries": 10,
+          "command": [ "CMD-SHELL", "curl -f http://localhost:3000/health || exit 1" ],
+          "timeout": 5,
+          "interval": 10,
+          "startPeriod": 10
         }
       }
     ]
