@@ -15,7 +15,7 @@ RUN CGO_ENABLED=0 go build -o /go/bin/app
 FROM gcr.io/distroless/static-debian11 as prod
 
 # install curl for health check
-RUN apt update && apt install -y curl
+COPY --from=dev /bin/curl /usr/bin/curl
 
 # only copy files from bin over
 COPY --from=dev go/bin/app /
