@@ -185,10 +185,7 @@ resource "aws_ecs_task_definition" "bc_client_api" {
         },
         "healthCheck": {
           "retries": 10,
-          "command": [
-            "CMD-SHELL",
-            "curl -f http://127.0.0.1:${var.launch_type.container_port} || exit 1"
-          ],
+          "command": ["/wget", "--quiet", "--output-document=-", "http://localhost:3000/health"]
           "timeout": 5,
           "interval": 30,
           "startPeriod": 10
