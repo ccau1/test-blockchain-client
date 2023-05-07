@@ -185,7 +185,12 @@ resource "aws_ecs_task_definition" "bc_client_api" {
         },
         "healthCheck": {
           "retries": 10,
-          "command": ["/wget", "--quiet", "--output-document=-", "http://localhost:3000/health"]
+          "command": [
+            "/wget",
+            "--quiet",
+            "--output-document=-",
+            "http://localhost:3000/health"
+          ],
           "timeout": 5,
           "interval": 30,
           "startPeriod": 10

@@ -25,4 +25,9 @@ go.work
 .env
 tmp
 
-.terraform
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
