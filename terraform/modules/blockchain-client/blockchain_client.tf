@@ -185,9 +185,12 @@ resource "aws_ecs_task_definition" "bc_client_api" {
         },
         "healthCheck": {
           "retries": 10,
-          "command": [ "CMD-SHELL", "curl -f http://localhost:3000/health || exit 1" ],
+          "command": [
+            "CMD-SHELL",
+            "curl -f http://127.0.0.1:${var.launch_type.container_port} || exit 1"
+          ],
           "timeout": 5,
-          "interval": 10,
+          "interval": 30,
           "startPeriod": 10
         }
       }
