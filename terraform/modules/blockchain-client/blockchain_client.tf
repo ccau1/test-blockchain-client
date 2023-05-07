@@ -186,7 +186,7 @@ resource "aws_ecs_task_definition" "bc_client_api" {
         "healthCheck": {
           "retries": 10,
           "command": [
-            "/wget",
+            "wget",
             "--quiet",
             "--output-document=-",
             "http://127.0.0.1:3000/health"
