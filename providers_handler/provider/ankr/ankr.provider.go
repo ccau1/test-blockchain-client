@@ -126,6 +126,10 @@ func callAnkrProvider[Result any](chainType string, body []byte) (Result, error)
 	defer res.Body.Close()
 	resContent, err := ioutil.ReadAll(res.Body)
 
+	if (err != nil) {
+		// TODO: set status to down, but also need other handling to allow it be up again
+	}
+
 	// Log.Infof("resContent raw: %+v", string(resContent))
 
 	var callResponse AnkrCallResponse[Result]

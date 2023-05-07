@@ -32,3 +32,8 @@ output "dev_deploy_access_key_key_fingerprint" {
   description = "The fingerprint of the PGP key used to encrypt the secret"
   value       = module.blockchain-client-dev.deploy_access_key_key_fingerprint
 }
+
+output "dev_secrets_manager_name" {
+  description = "The secrets manager name"
+  value       = module.blockchain-client-dev.secrets_manager_name
+}

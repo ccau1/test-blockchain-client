@@ -32,3 +32,8 @@ output "deploy_access_key_key_fingerprint" {
   description = "The fingerprint of the PGP key used to encrypt the secret"
   value       = aws_iam_access_key.deploy.key_fingerprint
 }
+
+output "secrets_manager_name" {
+  description = "The secrets manager name"
+  value       = aws_secretsmanager_secret.deploy_access_key.name
+}

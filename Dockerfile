@@ -17,5 +17,7 @@ FROM gcr.io/distroless/static-debian11 as prod
 # only copy files from bin over
 COPY --from=dev go/bin/app /
 
+COPY --from=dev app/docs/docgen.md /docs/docgen.md
+
 # calling app will run the executable app
 CMD ["/app"]

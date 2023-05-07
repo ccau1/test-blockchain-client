@@ -111,8 +111,13 @@ resource "aws_iam_group_membership" "deploy" {
 
 # // setup secrets manager
 
+resource "random_string" "secrets_manager" {
+  length = 4
+  special = false
+}
+
 resource "aws_secretsmanager_secret" "deploy_access_key" {
-  name = "${var.env}-secrets"
+  name = "${var.env}-secrets-${random_string.secrets_manager.result}"
 }
 
 resource "aws_secretsmanager_secret_version" "deploy_access_key" {
