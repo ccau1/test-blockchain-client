@@ -2,9 +2,6 @@ FROM golang:1.20.3-alpine as dev
 # install air for hot-reload
 RUN go install github.com/cosmtrek/air@latest
 
-# install curl for health check
-RUN apk --no-cache add curl
-
 # copy files from local to vm
 WORKDIR /app
 COPY . /app/
@@ -16,6 +13,9 @@ RUN go mod download
 RUN CGO_ENABLED=0 go build -o /go/bin/app
 
 FROM gcr.io/distroless/static-debian11 as prod
+
+# install curl for health check
+RUN apk --no-cache add curl
 
 # only copy files from bin over
 COPY --from=dev go/bin/app /
