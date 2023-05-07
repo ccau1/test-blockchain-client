@@ -2,6 +2,9 @@ FROM golang:1.20.3-alpine as dev
 # install air for hot-reload
 RUN go install github.com/cosmtrek/air@latest
 
+# install curl for health check
+RUN apk --no-cache add curl
+
 # copy files from local to vm
 WORKDIR /app
 COPY . /app/
