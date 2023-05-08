@@ -106,10 +106,7 @@ jobs:
   deploy_to_staging:
     name: Staging
     needs: [build]
-    rules:
-      - if: true
-        when: manual
-        allow_failure: true
+    when: manual
     uses: ./.github/workflows/deploy_image.yml
     with:
       ENV: staging
