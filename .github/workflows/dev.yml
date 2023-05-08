@@ -106,18 +106,15 @@ jobs:
   deploy_to_test:
     name: Test
     needs: [build]
-    when: manual
-    steps:
-      - name: Deploy
-        uses: ./.github/workflows/deploy_image.yml
-        with:
-          ENV: test
-          environment: test
-          AWS_REGION: ${{ needs.build.outputs.AWS_REGION }}
-          CONTAINER_NAME: ${{ needs.build.outputs.CONTAINER_NAME }}
-          ECS_SERVICE: ${{ needs.build.outputs.ECS_SERVICE }}
-          ECS_CLUSTER: ${{ needs.build.outputs.ECS_CLUSTER }}
-          ECR_REPOSITORY: ${{ needs.build.outputs.ECR_REPOSITORY }}
-        secrets:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    uses: ./.github/workflows/deploy_image.yml
+    with:
+      ENV: test
+      environment: test
+      AWS_REGION: ${{ needs.build.outputs.AWS_REGION }}
+      CONTAINER_NAME: ${{ needs.build.outputs.CONTAINER_NAME }}
+      ECS_SERVICE: ${{ needs.build.outputs.ECS_SERVICE }}
+      ECS_CLUSTER: ${{ needs.build.outputs.ECS_CLUSTER }}
+      ECR_REPOSITORY: ${{ needs.build.outputs.ECR_REPOSITORY }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
