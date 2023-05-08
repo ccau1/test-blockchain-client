@@ -1,4 +1,4 @@
-name: Deploy Image
+name: __Deploy Image
 
 on:
   workflow_call:
