@@ -106,6 +106,7 @@ jobs:
   deploy_to_staging:
     name: Staging
     needs: [build]
+    if: false
     uses: ./.github/workflows/deploy_image.yml
     with:
       ENV: staging
